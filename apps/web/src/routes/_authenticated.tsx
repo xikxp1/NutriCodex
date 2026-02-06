@@ -1,6 +1,8 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-import { Sidebar, SidebarContent, SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
+import { AppSidebar } from "~/components/layout/app-sidebar";
+import { TopBar } from "~/components/layout/top-bar";
+import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
 
 import { getAuth } from "./__root";
 
@@ -21,13 +23,9 @@ export const Route = createFileRoute("/_authenticated")({
 function AuthenticatedLayout() {
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon">
-        <SidebarContent />
-      </Sidebar>
+      <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <span className="text-sm font-medium">NutriCodex</span>
-        </header>
+        <TopBar />
         <div className="flex flex-1 flex-col gap-4 p-4">
           <Outlet />
         </div>
