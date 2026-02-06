@@ -1,0 +1,24 @@
+{
+  "id": "beads-20260206-126-sub-04",
+  "parent_id": "beads-20260206-126",
+  "title": "Add Product Dialog -- manual creation",
+  "description": "Implement AddProductDialog with ShadCN Dialog and Tabs (Manual/Import tabs). Implement ManualProductForm with TanStack Form + Zod validation (productFormSchema from product-schema.ts), image upload via 3-step Convex flow (generateUploadUrl, POST file, pass storageId to createProduct), client-side file validation (image/* types, max 5MB). The Import tab shows a placeholder message for now. Wire the 'Add Product' button on the products page to open this dialog. Success/error feedback via Sonner toast.success() and toast.error(). Covers FR-15, FR-16, FR-23, NFR-3, NFR-4.",
+  "status": "pending",
+  "phase": "implementation",
+  "complexity": "medium",
+  "files_to_create": [
+    "apps/web/src/components/products/add-product-dialog.tsx",
+    "apps/web/src/components/products/manual-product-form.tsx"
+  ],
+  "files_to_modify": [
+    "apps/web/src/routes/_authenticated/products.tsx"
+  ],
+  "depends_on": [
+    "beads-20260206-126-sub-03"
+  ],
+  "commits": [],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T19:00:00Z",
+  "updated_at": "2026-02-06T19:00:00Z"
+}

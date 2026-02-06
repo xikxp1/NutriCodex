@@ -38,6 +38,10 @@ NutriCodex is a nutrition/food tracking application delivered as a Turborepo mon
 | Web Styling     | Tailwind CSS v4 + ShadCN UI         | Utility-first CSS, component library       |
 | Web Icons       | Lucide React                        | SVG icon library (ShadCN standard)         |
 | Web UI Prims    | radix-ui                            | Headless UI primitives for ShadCN components |
+| Web Forms       | TanStack Form + Zod                 | Headless form management with schema validation |
+| Web Virtual     | TanStack Virtual                    | Virtualized list rendering                 |
+| Web Debounce    | TanStack Pacer                      | Debouncing utilities for search inputs     |
+| Web Toasts      | Sonner                              | Toast notifications                        |
 | Mobile Styling  | Uniwind + React Native Reusables    | Tailwind bindings for React Native         |
 | Linting/Format  | Biome v2                            | Unified linter, formatter, import sorter   |
 | Type Checking   | TypeScript (strict mode)            | Static type safety across all packages     |
@@ -56,16 +60,20 @@ NutriCodex/
 |       `-- src/
 |           |-- components/   # UI components
 |           |   |-- layout/   # App shell components (AppSidebar, TopBar, UserMenu)
+|           |   |-- products/ # Product management components (ProductList, ProductRow,
+|           |   |             #   AddProductDialog, ManualProductForm, OpenFoodFactsSearch,
+|           |   |             #   ProductDetailDialog, ProductEditForm, product-schema)
 |           |   `-- ui/       # ShadCN primitives (AlertDialog, Avatar, Button, Card,
-|           |                 #   DropdownMenu, Input, Label, Separator, Sheet, Sidebar,
-|           |                 #   Skeleton, Tooltip)
+|           |                 #   Dialog, DropdownMenu, Field, Input, Label, Separator,
+|           |                 #   Sheet, Sidebar, Skeleton, Sonner, Tabs, Tooltip)
 |           |-- hooks/        # Custom React hooks (useIsMobile)
 |           |-- lib/          # Utilities, auth client/server
 |           |-- routes/       # TanStack file-based routes
 |           |   |-- _authenticated.tsx      # Authenticated layout route (app shell)
 |           |   |-- _authenticated/         # Protected child routes
 |           |   |   |-- index.tsx           # Main page (dashboard placeholder)
-|           |   |   `-- household.tsx       # Household details and management
+|           |   |   |-- household.tsx       # Household details and management
+|           |   |   `-- products.tsx        # Product database management page
 |           |   |-- api/                    # API routes (auth proxy)
 |           |   |-- onboarding.tsx          # Household onboarding (create/join)
 |           |   |-- login.tsx               # Public login page
@@ -74,8 +82,9 @@ NutriCodex/
 |-- packages/
 |   |-- backend/              # Shared Convex backend (@nutricodex/backend)
 |   |   |-- convex/           # Convex schema, functions, auth config
-|   |   |   |-- schema.ts    # Table definitions (household, householdMember)
-|   |   |   `-- households.ts # Household queries and mutations
+|   |   |   |-- schema.ts    # Table definitions (household, householdMember, product)
+|   |   |   |-- households.ts # Household queries and mutations
+|   |   |   `-- products.ts  # Product queries, mutations, and actions
 |   |   `-- src/              # Package exports (typed API, providers)
 |   `-- typescript-config/    # Shared tsconfig presets (@nutricodex/typescript-config)
 |-- biome.json                # Root Biome configuration
@@ -98,6 +107,12 @@ NutriCodex/
 - **Auth Provider**: `ConvexBetterAuthProvider` wraps the app in root layout, providing auth context to all routes. Receives `initialToken` for SSR hydration.
 - **Onboarding**: The `/onboarding` route (`src/routes/onboarding.tsx`) is a standalone page (not inside the app shell) where users create a new household or browse and join an existing one. It has its own `beforeLoad` guard: must be authenticated (redirects to `/login`) and must NOT have a household (redirects to `/`). The page uses a toggle between "Create Household" (form with name input) and "Join Household" (list of existing households with member counts). After successful create/join, navigates to `/`.
 - **Household Details**: The `/_authenticated/household` route (`src/routes/_authenticated/household.tsx`) is an authenticated page inside the app shell for managing the current household. Features include: editable household name (inline edit with save/cancel), member list with avatars and "(You)" indicator, and a "Leave Household" button with AlertDialog confirmation that warns about household deletion if the user is the last member. On leave, navigates to `/onboarding`.
+- **Products**: The `/_authenticated/products` route (`src/routes/_authenticated/products.tsx`) is an authenticated page inside the app shell for managing the global product database. Features include:
+  - **Product List** (`src/components/products/product-list.tsx`): Virtualized infinite-scroll list using `usePaginatedQuery` + `useVirtualizer`. Loads 20 items initially, auto-loads more on scroll. Each row shows image thumbnail, name, and macros.
+  - **Search/Filter**: Debounced text input (300ms via `@tanstack/pacer`) that filters products by name using Convex full-text search (search index on `name` field).
+  - **Add Product Dialog** (`src/components/products/add-product-dialog.tsx`): Dialog with tabs for Manual creation (TanStack Form + Zod) and OpenFoodFacts import (debounced search + paginated results). Import downloads images into Convex storage via the `importProduct` action.
+  - **Product Detail Dialog** (`src/components/products/product-detail-dialog.tsx`): View/edit/delete dialog with TanStack Form for editing, AlertDialog for delete confirmation.
+  - **Toast Notifications**: All operations provide feedback via Sonner toasts (success/error).
 - **App Shell**: Authenticated routes render inside an app shell layout built on the **ShadCN Sidebar component**:
   - **SidebarProvider** (from `src/components/ui/sidebar.tsx`): Manages sidebar open/collapsed state with cookie persistence, keyboard shortcuts (Cmd/Ctrl+B), and mobile detection
   - **AppSidebar** (`src/components/layout/app-sidebar.tsx`): Composes ShadCN `Sidebar` with `collapsible="icon"` mode. Contains SidebarHeader (app name), SidebarContent (nav menu with placeholder items), SidebarFooter (user info + dropdown)
@@ -117,9 +132,11 @@ NutriCodex/
 
 ### packages/backend (Convex)
 - **Purpose**: Shared backend consumed by both apps
-- **Schema**: `convex/schema.ts` (Better Auth tables managed by component + application tables: `household`, `householdMember`)
+- **Schema**: `convex/schema.ts` (Better Auth tables managed by component + application tables: `household`, `householdMember`, `product`)
 - **Auth**: Better Auth component registered in `convex/convex.config.ts`, auth instance in `convex/auth.ts`, HTTP routes in `convex/http.ts`
 - **Household Functions**: `convex/households.ts` provides queries (`getMyHousehold`, `getHouseholdMembers`, `listHouseholds`) and mutations (`createHousehold`, `joinHousehold`, `leaveHousehold`, `updateHousehold`) for household CRUD and membership management. All functions require authentication via `authComponent.getAuthUser(ctx)`. Member lookups use `authComponent.getAnyUserById(ctx, userId)` to resolve Better Auth user details.
+- **Product Functions**: `convex/products.ts` provides queries (`getProducts` with cursor-based pagination and full-text search, `getProduct`), mutations (`createProduct`, `createProductInternal`, `updateProduct`, `deleteProduct`, `generateUploadUrl`), and actions (`searchOpenFoodFacts`, `importProduct`) for product CRUD and OpenFoodFacts integration. The `importProduct` action downloads images from OpenFoodFacts into Convex file storage before creating the product. All functions require authentication. Products are global (not household-scoped).
+- **Shared Validators**: `convex/schema.ts` exports `macronutrientsValidator` -- a reusable `v.object(...)` for nutrition data (calories, protein, carbs, fat as non-negative integers per 100g).
 - **Exports**: Typed Convex API (`api`), data model types (`DataModel`, `Doc`, `Id`), client utilities (`ConvexProvider`, `ConvexReactClient`), `ConvexBetterAuthProvider`
 
 ### packages/typescript-config
@@ -143,6 +160,7 @@ NutriCodex/
 |------------------|---------------------------------------------|----------------------------------|----------------------------------|
 | household        | `name: v.string()`                          | (none)                           | Household entity                 |
 | householdMember  | `userId: v.string()`, `householdId: v.id("household")` | `by_userId`, `by_householdId` | Maps users to households (1 user : 0..1 membership, N members : 1 household) |
+| product          | `name`, `macronutrients` (object), `imageId`, `barcode`, `source` | `search_by_name` (full-text search) | Global product database          |
 
 **Entity relationships:**
 
@@ -156,6 +174,12 @@ householdMember
   | N:1 (many members belong to one household)
   |
 household
+
+product (standalone, global)
+  |
+  | 0..1 : 0..1 (optional image)
+  |
+_storage (Convex file storage)
 ```
 
 **Note on `userId` type:** The `householdMember.userId` field stores the Better Auth user `_id` as `v.string()` rather than `v.id("user")`. Better Auth tables are managed by the `@convex-dev/better-auth` Convex component in a separate namespace and are not defined in the app's `schema.ts`. The component user `_id` is not a Convex `Id` from the app's data model, so `v.string()` is the correct type. Lookups use `authComponent.getAnyUserById(ctx, userId)`.
@@ -206,6 +230,36 @@ All functions require authentication. Accessed via `api.households.*`.
 
 **Error handling:** Mutations throw `ConvexError` with descriptive messages (e.g., "You already belong to a household", "Household not found", "Household name must be between 1 and 100 characters").
 
+### Product API (packages/backend/convex/products.ts)
+
+All functions require authentication. Accessed via `api.products.*`.
+
+**Queries:**
+
+| Function       | Args                                                              | Returns                                    | Description                                       |
+|----------------|-------------------------------------------------------------------|--------------------------------------------|---------------------------------------------------|
+| `getProducts`  | `{ paginationOpts, nameFilter?: string }`                         | `PaginationResult` with resolved `imageUrl`| Paginated product list with optional full-text search filter |
+| `getProduct`   | `{ productId: Id<"product"> }`                                    | `Product` with resolved `imageUrl`         | Single product by ID                              |
+
+**Mutations:**
+
+| Function                | Args                                                              | Returns            | Description                                                 |
+|-------------------------|-------------------------------------------------------------------|--------------------|-------------------------------------------------------------|
+| `createProduct`         | `{ name, macronutrients, imageId? }`                              | `Id<"product">`    | Creates a manually-entered product                          |
+| `createProductInternal` | `{ name, macronutrients, imageId?, barcode?, source }`            | `Id<"product">`    | Internal mutation for creating products from actions         |
+| `updateProduct`         | `{ productId, name?, macronutrients?, imageId?, removeImage? }`   | `void`             | Updates product fields; cleans up old images                |
+| `deleteProduct`         | `{ productId }`                                                   | `void`             | Deletes product and associated stored image                 |
+| `generateUploadUrl`     | `{}`                                                              | `string`           | Generates a Convex file storage upload URL                  |
+
+**Actions:**
+
+| Function               | Args                                    | Returns                                             | Description                           |
+|------------------------|-----------------------------------------|-----------------------------------------------------|---------------------------------------|
+| `searchOpenFoodFacts`  | `{ query, page?, pageSize? }`           | `{ products, totalCount, pageCount, page }`         | Searches OpenFoodFacts search-a-licious API |
+| `importProduct`        | `{ name, macronutrients, imageUrl?, barcode? }` | `Id<"product">`                              | Downloads image into Convex storage and creates product |
+
+**Error handling:** Mutations throw `ConvexError` with descriptive messages. Actions throw `ConvexError` on network/timeout errors (image download failures are handled gracefully).
+
 ## Key Design Decisions
 
 1. **Convex as shared workspace package**: Single source of truth for schema and typed API, consumed by both apps via `@nutricodex/backend`.
@@ -231,3 +285,19 @@ All functions require authentication. Accessed via `api.households.*`.
 11. **Mandatory household onboarding**: Every authenticated user must belong to exactly one household before accessing the main app. The `/onboarding` route is a standalone page (outside the app shell) where users create or join a household. This ensures the household context is always available for food tracking features. The onboarding route has its own auth guard (redirects unauthenticated users to `/login`) and redirects users who already have a household to `/`.
 
 12. **userId stored as string for Better Auth references**: Application tables that reference Better Auth users (e.g., `householdMember.userId`) store the user `_id` as `v.string()` rather than `v.id("user")`. Better Auth tables are managed by the `@convex-dev/better-auth` Convex component in a separate namespace and their IDs are not typed as `Id` from the app's data model. User details are resolved via `authComponent.getAnyUserById(ctx, userId)`.
+
+13. **Global product database**: Products are not scoped to households. Any authenticated user can create, view, edit, or delete any product. This is appropriate for a self-hosted application where all users share a common food database.
+
+14. **Reusable macronutrient validator**: The `macronutrientsValidator` is defined once in `schema.ts` as an exported `v.object(...)` constant. It is referenced by the `product` table and will be reused by future tables (meal logs, daily targets). Integer enforcement is done in mutations, not at the validator level (Convex `v.number()` does not distinguish integers).
+
+15. **Cursor-based pagination with virtualization**: The product list uses Convex cursor-based pagination (`usePaginatedQuery`) combined with TanStack Virtual (`useVirtualizer`) for a seamless infinite-scroll experience. Only visible rows are rendered in the DOM. New pages load automatically as the user scrolls near the bottom. This scales to thousands of products without UI performance degradation.
+
+16. **TanStack Form for all product forms**: Product create and edit forms use `@tanstack/react-form` with Zod validation and ShadCN Field components. This provides headless form state management, real-time validation feedback, and accessible form markup via the `form.Field` render-prop pattern.
+
+17. **Sonner toasts for operation feedback**: All product mutations report success/error via Sonner toast notifications (`toast.success()`, `toast.error()`). The `Toaster` component is mounted in the root layout positioned top-right below the sticky top bar.
+
+18. **Convex file storage for all product images**: Both manually uploaded images and images imported from OpenFoodFacts are stored in Convex file storage (`imageId` referencing `_storage`). The `importProduct` action downloads external images server-side during import. This eliminates dependency on external image hosting, provides a single image resolution path, and ensures image availability regardless of external service status.
+
+19. **TanStack Pacer for debounced search**: All text search inputs (product list filter, OpenFoodFacts search) use `useDebouncedValue` from `@tanstack/pacer` with a 300ms delay. This prevents excessive query/action calls during typing while providing responsive feedback.
+
+20. **Convex full-text search for product name filtering**: The `product` table uses a `searchIndex("search_by_name", { searchField: "name" })` for server-side text search. When a name filter is active, the `getProducts` query uses `.withSearchIndex()` with BM25 relevance ranking and prefix matching. This replaces client-side post-pagination filtering and ensures every paginated page contains relevant results.

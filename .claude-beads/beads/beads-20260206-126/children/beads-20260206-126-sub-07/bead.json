@@ -1,0 +1,21 @@
+{
+  "id": "beads-20260206-126-sub-07",
+  "parent_id": "beads-20260206-126",
+  "title": "Update ARCHITECTURE.md + final polish",
+  "description": "Apply all ARCHITECTURE.md updates from the architecture artifact: add product components to project structure, add new tech stack entries (TanStack Form, TanStack Virtual, TanStack Pacer, Sonner), add Products subsection to web component map, add Product Functions and Shared Validators to backend component map, add product table to data model section, add Product API to API boundaries, add key design decisions 13-20. Verify end-to-end integration: lint, type-check, build all pass.",
+  "status": "pending",
+  "phase": "implementation",
+  "complexity": "small",
+  "files_to_create": [],
+  "files_to_modify": [
+    "ARCHITECTURE.md"
+  ],
+  "depends_on": [
+    "beads-20260206-126-sub-06"
+  ],
+  "commits": [],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T19:00:00Z",
+  "updated_at": "2026-02-06T19:00:00Z"
+}
