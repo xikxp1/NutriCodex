@@ -1,0 +1,25 @@
+{
+  "name": "nutricodex",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@nutricodex/web",
+    "dev:mobile": "turbo run dev --filter=@nutricodex/mobile",
+    "dev:backend": "turbo run dev --filter=@nutricodex/backend",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "format": "turbo run format",
+    "format:check": "turbo run format:check"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.14",
+    "turbo": "^2.8.3",
+    "typescript": "^5.7.0"
+  },
+  "packageManager": "bun@1.2.4"
+}

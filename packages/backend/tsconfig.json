@@ -1,0 +1,12 @@
+{
+  "extends": "@nutricodex/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["src/**/*", "convex/**/*"],
+  "exclude": ["node_modules", "dist", "convex/_generated"]
+}

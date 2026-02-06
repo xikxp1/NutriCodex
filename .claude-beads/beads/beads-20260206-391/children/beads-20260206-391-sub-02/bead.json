@@ -1,0 +1,27 @@
+{
+  "id": "beads-20260206-391-sub-02",
+  "parent_id": "beads-20260206-391",
+  "title": "TypeScript configuration package",
+  "description": "Create packages/typescript-config as a shared workspace package containing base TypeScript compiler configurations. Includes base.json (strict, ES2022, Bundler resolution, isolatedModules), react.json (extends base, adds DOM libs and JSX), react-native.json (extends base, adds react-native types), and a minimal package.json naming the package @nutricodex/typescript-config.",
+  "status": "completed",
+  "complexity": "small",
+  "depends_on": ["beads-20260206-391-sub-01"],
+  "files": [
+    "packages/typescript-config/package.json",
+    "packages/typescript-config/base.json",
+    "packages/typescript-config/react.json",
+    "packages/typescript-config/react-native.json"
+  ],
+  "acceptance_criteria": [
+    "packages/typescript-config/package.json exists with name @nutricodex/typescript-config, version 0.0.0, private true",
+    "base.json sets strict: true, target: ES2022, module: ESNext, moduleResolution: Bundler, jsx: react-jsx, skipLibCheck: true, esModuleInterop: true, resolveJsonModule: true, isolatedModules: true",
+    "react.json extends ./base.json and adds lib: [DOM, DOM.Iterable, ES2022], noEmit: true",
+    "react-native.json extends ./base.json and adds lib: [ES2022], types: [react-native], noEmit: true",
+    "FR-5.1 is satisfied"
+  ],
+  "commits": ["9fafbbd3ec1ebd6b9f74e47895cf443be27c643b"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T02:00:00Z",
+  "updated_at": "2026-02-06T02:10:00Z"
+}

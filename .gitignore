@@ -1,3 +1,37 @@
+# Dependencies
+node_modules/
+
+# Turborepo
+.turbo/
+
+# Build outputs
+dist/
+.output/
+.vinxi/
+.tanstack
+
+# Convex generated
+.convex/
+convex/_generated/
+
+# Expo
+.expo/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
 # Beads volatile state (not tracked in git)
 .claude-beads/state.json
 .claude-beads/audit.jsonl

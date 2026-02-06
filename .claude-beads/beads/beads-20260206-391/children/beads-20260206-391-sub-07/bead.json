@@ -1,0 +1,65 @@
+{
+  "id": "beads-20260206-391-sub-07",
+  "parent_id": "beads-20260206-391",
+  "title": "CI workflow and verification",
+  "description": "Create the GitHub Actions CI workflow at .github/workflows/ci.yml that runs lint, type-check, and build on push/PR to main. Uses oven-sh/setup-bun for Bun installation and bun install --frozen-lockfile. After creating the CI file, run bun install at the root to resolve all workspace dependencies, then verify the scaffold by running bun run lint, bun run type-check, and bun run build. Fix any issues discovered during verification. Ensure Turborepo caching is properly configured (outputs field in turbo.json) so a second build is a cache hit.",
+  "status": "completed",
+  "complexity": "small",
+  "depends_on": ["beads-20260206-391-sub-04", "beads-20260206-391-sub-06"],
+  "files": [
+    ".github/workflows/ci.yml",
+    "biome.json",
+    "apps/web/package.json",
+    "apps/web/src/router.tsx",
+    "apps/web/src/routes/index.tsx",
+    "apps/web/src/routes/api/auth/-$.ts",
+    "apps/web/src/routeTree.gen.ts",
+    "apps/web/vite-env.d.ts",
+    "apps/web/tsconfig.json",
+    "apps/mobile/package.json",
+    "apps/mobile/tsconfig.json",
+    "packages/backend/package.json",
+    "packages/backend/tsconfig.json",
+    "packages/backend/convex/_generated/api.ts",
+    "packages/backend/convex/_generated/dataModel.ts"
+  ],
+  "acceptance_criteria": [
+    ".github/workflows/ci.yml triggers on push and pull_request to main branch",
+    "Workflow uses actions/checkout@v4 and oven-sh/setup-bun@v2",
+    "Workflow steps: install (bun install --frozen-lockfile), lint (bun run lint), type-check (bun run type-check), build (bun run build)",
+    "bun install at root resolves all workspace dependencies without errors",
+    "bun run lint passes across all workspaces (Biome check reports no errors)",
+    "bun run type-check passes across all workspaces (tsc --noEmit exits 0)",
+    "bun run build succeeds and produces build artifacts",
+    "Running bun run build a second time completes quickly via Turborepo cache hit",
+    "FR-7.1, FR-7.2, NFR-1, NFR-2, NFR-3 are satisfied"
+  ],
+  "commits": ["c86723c5e1369d2499129d00dd7f595d14abe232"],
+  "comments": [
+    "Fixed multiple issues discovered during verification: Biome v2 config migration (files.ignore -> files.includes), dependency version mismatches (@convex-dev/react-query, @tanstack/react-router-with-query), TanStack Start 1.158 API changes (createRouter -> getRouter, createAPIFileRoute removed), missing type definitions (@types/node, expo-constants, Vite client types), and Convex _generated stub files needed for offline type-checking.",
+    "All biome formatting fixes applied across all workspaces via biome check --write.",
+    "Second build completes in ~62ms via Turborepo FULL TURBO cache hit."
+  ],
+  "contested_tests": [
+    {
+      "test_file": "tests/verify-scaffold-test.sh",
+      "test_name": "FR-1.2: build task dependsOn ^build (line 220)",
+      "rationale": "The check uses grep -q with the substring '^build', but grep interprets '^' as a regex anchor (start-of-line). The actual value is '[\"^build\"]' which does contain the literal string '^build', but the regex interpretation causes the match to fail. The test should use grep -Fq for fixed-string matching.",
+      "suggested_fix": "Change check_json_contains function (line 151) to use 'grep -Fq' instead of 'grep -q' for all literal substring checks, or escape the caret: '\\^build'."
+    },
+    {
+      "test_file": "tests/verify-scaffold-test.sh",
+      "test_name": "FR-1.3: Biome ignores node_modules/turbo/convex/_generated (lines 239-241)",
+      "rationale": "The tests check for data.files.ignore which does not exist in Biome v2.3.14. Biome v2 removed the 'files.ignore' field and replaced it with negation patterns in 'files.includes'. The architecture spec predated the Biome v2 breaking change. The actual config uses 'files.includes' with '!**/node_modules', '!**/.turbo', '!**/convex/_generated' patterns.",
+      "suggested_fix": "Change the three Biome ignore checks to inspect 'data.files.includes' instead of 'data.files.ignore', and search for the negation pattern (e.g., '!**/node_modules' instead of 'node_modules')."
+    },
+    {
+      "test_file": "tests/verify-scaffold-test.sh",
+      "test_name": "FR-2.7: check_file and createAPIFileRoute checks for auth route (lines 449-451)",
+      "rationale": "The test checks for 'apps/web/src/routes/api/auth/$.ts' and expects it to contain 'createAPIFileRoute'. However, createAPIFileRoute does not exist in @tanstack/react-start@1.158.3 (the installed version). This API was removed from TanStack Start. The file was renamed to '-$.ts' (with '-' prefix) to exclude it from TanStack Router's route file scanning, since it is not a page route. The auth handler is still exported for use in the auth flow.",
+      "suggested_fix": "Update the file path check to 'apps/web/src/routes/api/auth/-$.ts' and remove the createAPIFileRoute content check. Instead verify the file contains 'handler' which is the actual auth handler function."
+    }
+  ],
+  "created_at": "2026-02-06T02:00:00Z",
+  "updated_at": "2026-02-06T02:55:00Z"
+}
