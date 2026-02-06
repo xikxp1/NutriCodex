@@ -11,7 +11,9 @@ export function getRouter() {
     throw new Error("Missing VITE_CONVEX_URL environment variable");
   }
 
-  const convexQueryClient = new ConvexQueryClient(convexUrl);
+  const convexQueryClient = new ConvexQueryClient(convexUrl, {
+    expectAuth: true,
+  });
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -25,7 +27,7 @@ export function getRouter() {
   const router = routerWithQueryClient(
     createTanStackRouter({
       routeTree,
-      context: { queryClient },
+      context: { queryClient, convexQueryClient },
       Wrap: ({ children }) => (
         <ConvexProvider client={convexQueryClient.convexClient}>{children}</ConvexProvider>
       ),

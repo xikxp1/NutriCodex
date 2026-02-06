@@ -1,0 +1,18 @@
+{
+  "id": "beads-20260206-693-sub-05",
+  "parent_id": "beads-20260206-693",
+  "title": "Main Screen with Auth Guard",
+  "description": "Modify apps/web/src/routes/index.tsx to add a beforeLoad auth guard that calls getAuth() server function. If no token is returned, throw redirect({ to: '/login', search: { redirect: location.href } }). If token exists, call context.convexQueryClient.serverHttpClient?.setAuth(token) for SSR query support. Replace the placeholder component with a main screen that uses authClient.useSession() to get the current user's name. Display 'Welcome, [Name]' heading. Show a loading state while session isPending. Add a logout button that calls authClient.signOut() with fetchOptions.onSuccess callback navigating to '/login'. Uses ShadCN Button component. Covers US-3, US-4, US-5, US-6, FR-3, FR-8, FR-10, FR-11, UX-5.",
+  "status": "completed",
+  "complexity": "medium",
+  "depends_on": ["beads-20260206-693-sub-02"],
+  "files_to_create": [],
+  "files_to_modify": [
+    "apps/web/src/routes/index.tsx"
+  ],
+  "commits": ["4d5b432"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T12:30:00Z",
+  "updated_at": "2026-02-06T12:30:00Z"
+}
