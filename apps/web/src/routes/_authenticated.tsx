@@ -1,10 +1,18 @@
+import { api } from "@nutricodex/backend";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 
 import { AppSidebar } from "~/components/layout/app-sidebar";
 import { TopBar } from "~/components/layout/top-bar";
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
+import { fetchAuthQuery } from "~/lib/auth-server";
 
 import { getAuth } from "./__root";
+
+export const getHouseholdStatus = createServerFn({ method: "GET" }).handler(async () => {
+  const household = await fetchAuthQuery(api.households.getMyHousehold, {});
+  return household;
+});
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ context, location }) => {
@@ -16,6 +24,13 @@ export const Route = createFileRoute("/_authenticated")({
       });
     }
     context.convexQueryClient.serverHttpClient?.setAuth(token);
+
+    const household = await getHouseholdStatus();
+    if (!household) {
+      throw redirect({
+        to: "/onboarding",
+      });
+    }
   },
   component: AuthenticatedLayout,
 });

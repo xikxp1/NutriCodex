@@ -1,0 +1,17 @@
+{
+  "id": "beads-20260206-408-sub-05",
+  "parent_id": "beads-20260206-408",
+  "title": "Household details page",
+  "description": "Create apps/web/src/routes/_authenticated/household.tsx inside the app shell (protected by auth + household guard). Displays: (1) Editable household name -- click heading to switch to Input + save/cancel Buttons, uses useMutation(api.households.updateHousehold), validates non-empty and max 100 chars. (2) Member list from useQuery(api.households.getHouseholdMembers, {householdId}) -- each row shows Avatar with AvatarImage/AvatarFallback (initials), name or email, and '(You)' indicator for current user. (3) Separator between sections. (4) 'Change Household' Button (variant=destructive or outline) that opens AlertDialog with title 'Leave Household?' and dynamic description (warns if last member, household will be deleted based on members.length === 1). AlertDialog has Cancel and 'Leave & Continue' buttons. On confirm: call leaveHousehold mutation, navigate to /onboarding. All data reactive via Convex subscriptions. Covers FR-16 through FR-20, NFR-03, NFR-05 through NFR-07.",
+  "status": "completed",
+  "phase": "implementation",
+  "complexity": "medium",
+  "depends_on": ["beads-20260206-408-sub-01", "beads-20260206-408-sub-02", "beads-20260206-408-sub-03"],
+  "artifacts": {},
+  "children": [],
+  "commits": ["e34d97e"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T16:30:00Z",
+  "updated_at": "2026-02-06T16:30:00Z"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "beads-20260206-408-sub-02",
+  "parent_id": "beads-20260206-408",
+  "title": "AlertDialog ShadCN component",
+  "description": "Add apps/web/src/components/ui/alert-dialog.tsx as an exact copy of the official ShadCN AlertDialog component. Must follow the same pattern as existing ShadCN components in the project: import from radix-ui (already installed at ^1.4.3), use cn from @/lib/utils, apply data-slot attributes, and export all sub-components (AlertDialog, AlertDialogTrigger, AlertDialogPortal, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel). AlertDialogAction and AlertDialogCancel use buttonVariants from the existing Button component. No new npm dependencies needed. Strictly necessary for FR-19 confirmation dialog.",
+  "status": "completed",
+  "phase": "implementation",
+  "complexity": "small",
+  "depends_on": [],
+  "artifacts": {},
+  "children": [],
+  "commits": ["3a1eecda394e940d9e71d556e29f537a12573ee9"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T16:30:00Z",
+  "updated_at": "2026-02-06T16:30:00Z"
+}

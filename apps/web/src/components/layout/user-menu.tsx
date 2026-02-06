@@ -1,5 +1,5 @@
-import { useNavigate } from "@tanstack/react-router";
-import { LogOut } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Home, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   DropdownMenu,
@@ -65,6 +65,13 @@ function UserMenu() {
             <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/household">
+            <Home />
+            <span>My Household</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={handleSignOut}>
           <LogOut />
