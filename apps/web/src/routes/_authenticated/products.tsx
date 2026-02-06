@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 
+import { AddProductDialog } from "~/components/products/add-product-dialog";
 import { ProductList } from "~/components/products/product-list";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/products")({
 function ProductsPage() {
   const [inputValue, setInputValue] = useState("");
   const [debouncedFilter] = useDebouncedValue(inputValue, { wait: 300 });
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-4">
@@ -27,13 +29,15 @@ function ProductsPage() {
             className="pl-9"
           />
         </div>
-        <Button disabled>
+        <Button onClick={() => setAddDialogOpen(true)}>
           <Plus />
           Add Product
         </Button>
       </div>
 
       <ProductList nameFilter={debouncedFilter} />
+
+      <AddProductDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />
     </div>
   );
 }
