@@ -12,32 +12,42 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 describe("useIsMobile hook", () => {
   let matchMediaListeners: Array<(event: { matches: boolean }) => void>;
   let currentMatches: boolean;
+  let sharedMql: MediaQueryList;
 
   beforeEach(() => {
     matchMediaListeners = [];
     currentMatches = false;
 
-    // Mock window.matchMedia
+    // Create a shared MediaQueryList object that is returned by all matchMedia calls
+    sharedMql = {
+      matches: currentMatches,
+      media: "",
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(
+        (_event: string, listener: (event: { matches: boolean }) => void) => {
+          matchMediaListeners.push(listener);
+        },
+      ),
+      removeEventListener: vi.fn(
+        (_event: string, listener: (event: { matches: boolean }) => void) => {
+          matchMediaListeners = matchMediaListeners.filter((l) => l !== listener);
+        },
+      ),
+      dispatchEvent: vi.fn(),
+    } as unknown as MediaQueryList;
+
+    // Mock window.matchMedia to return the shared mql object
     Object.defineProperty(window, "matchMedia", {
       writable: true,
-      value: vi.fn().mockImplementation((query: string) => ({
-        matches: currentMatches,
-        media: query,
-        onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(
-          (_event: string, listener: (event: { matches: boolean }) => void) => {
-            matchMediaListeners.push(listener);
-          },
-        ),
-        removeEventListener: vi.fn(
-          (_event: string, listener: (event: { matches: boolean }) => void) => {
-            matchMediaListeners = matchMediaListeners.filter((l) => l !== listener);
-          },
-        ),
-        dispatchEvent: vi.fn(),
-      })),
+      value: vi.fn().mockImplementation((query: string) => {
+        // Update the media query string but return the same object
+        sharedMql.media = query;
+        // Update matches to reflect current state
+        (sharedMql as { matches: boolean }).matches = currentMatches;
+        return sharedMql;
+      }),
     });
   });
 
@@ -83,7 +93,7 @@ describe("useIsMobile hook", () => {
     const { useIsMobile } = await import("~/hooks/use-mobile");
     const { unmount } = renderHook(() => useIsMobile());
 
-    const removeEventListenerMock = window.matchMedia("").removeEventListener;
+    const removeEventListenerMock = sharedMql.removeEventListener;
 
     unmount();
 
