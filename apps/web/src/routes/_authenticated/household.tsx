@@ -22,6 +22,7 @@ import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 import { authClient } from "~/lib/auth-client";
+import { resetHouseholdVerification } from "~/routes/_authenticated";
 
 export const Route = createFileRoute("/_authenticated/household")({
   component: HouseholdPage,
@@ -264,6 +265,7 @@ function LeaveHouseholdSection({
     setIsPending(true);
     try {
       await leaveHousehold();
+      resetHouseholdVerification();
       navigate({ to: "/onboarding" });
     } catch (err) {
       const message =

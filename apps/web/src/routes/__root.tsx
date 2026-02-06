@@ -18,6 +18,11 @@ export const Route = createRootRouteWithContext<{
   convexQueryClient: ConvexQueryClient;
 }>()({
   beforeLoad: async ({ context }) => {
+    // Only fetch token during SSR. On client-side navigations,
+    // auth is managed by ConvexBetterAuthProvider — no server round-trip needed.
+    if (typeof window !== "undefined") {
+      return { token: null };
+    }
     const token = await getAuth();
     if (token) {
       context.convexQueryClient.serverHttpClient?.setAuth(token);
