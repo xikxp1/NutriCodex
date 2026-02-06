@@ -1,26 +1,36 @@
 stack:
   - name: Turborepo
     docs: https://turbo.build/repo/docs
-  - name: TanStack Start
+  - name: TanStack Start + TanStack Router
+    key: tanstack
     docs: https://tanstack.com/start/latest/docs
   - name: Expo
+    key: expo
     docs: https://docs.expo.dev
   - name: React Native
+    key: react-native
     docs: https://reactnative.dev/docs/getting-started
   - name: Convex
+    key: convex
     docs: https://docs.convex.dev
   - name: ShadCN UI
+    key: shadcn
     docs: https://ui.shadcn.com/docs
   - name: Tailwind CSS
     docs: https://tailwindcss.com/docs
   - name: React Native Reusables
+    key: rnr
     docs: https://rnr-docs.vercel.app
   - name: Uniwind
+    key: uniwind
     docs: https://docs.uniwind.dev
   - name: Bun
     docs: https://bun.sh/docs
   - name: TypeScript
     docs: https://www.typescriptlang.org/docs
+  - name: Better Auth
+    key: better-auth
+    docs: https://www.better-auth.com/docs
 
 workflow:
   loop_limits:
