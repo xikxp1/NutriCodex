@@ -66,7 +66,7 @@ function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
+        <DropdownMenuItem onSelect={handleSignOut}>
           <LogOut />
           <span>Sign Out</span>
         </DropdownMenuItem>
