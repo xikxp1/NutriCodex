@@ -1,0 +1,23 @@
+{
+  "id": "beads-20260206-126-sub-05",
+  "parent_id": "beads-20260206-126",
+  "title": "Add Product Dialog -- OpenFoodFacts import",
+  "description": "Implement OpenFoodFactsSearch component with debounced search input (300ms via @tanstack/pacer), paginated results display with Previous/Next navigation based on pageCount/page metadata, product cards showing name/brand/image/macros, and 'Import' button per result that calls the importProduct action (which downloads image server-side into Convex storage). Replace the Import tab placeholder in AddProductDialog with this component. Loading states for search and import operations. Success/error toasts via Sonner. Covers FR-17, FR-18, FR-23, NFR-2, NFR-8.",
+  "status": "completed",
+  "phase": "implementation",
+  "complexity": "medium",
+  "files_to_create": [
+    "apps/web/src/components/products/openfoodfacts-search.tsx"
+  ],
+  "files_to_modify": [
+    "apps/web/src/components/products/add-product-dialog.tsx"
+  ],
+  "depends_on": [
+    "beads-20260206-126-sub-04"
+  ],
+  "commits": ["4fd45b9"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T19:00:00Z",
+  "updated_at": "2026-02-06T23:23:00Z"
+}

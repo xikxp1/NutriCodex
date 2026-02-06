@@ -1,4 +1,5 @@
-import { LayoutDashboard, Settings, UtensilsCrossed } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { LayoutDashboard, Package, Settings, UtensilsCrossed } from "lucide-react";
 import type * as React from "react";
 
 import {
@@ -15,9 +16,10 @@ import {
 } from "~/components/ui/sidebar";
 
 const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard },
-  { label: "Food Log", icon: UtensilsCrossed },
-  { label: "Settings", icon: Settings },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/" },
+  { label: "Products", icon: Package, href: "/products" },
+  { label: "Food Log", icon: UtensilsCrossed, href: "#" },
+  { label: "Settings", icon: Settings, href: "#" },
 ];
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
@@ -43,9 +45,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton tooltip={item.label}>
-                    <item.icon />
-                    <span>{item.label}</span>
+                  <SidebarMenuButton tooltip={item.label} asChild>
+                    <Link to={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

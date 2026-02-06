@@ -1,0 +1,21 @@
+{
+  "id": "beads-20260206-126-sub-01",
+  "parent_id": "beads-20260206-126",
+  "title": "Backend schema + product functions",
+  "description": "Add macronutrientsValidator and product table with search_by_name search index to schema.ts. Create products.ts with all Convex functions: queries (getProducts with cursor-based pagination + full-text search, getProduct), mutations (createProduct, createProductInternal, updateProduct, deleteProduct, generateUploadUrl), and actions (searchOpenFoodFacts with search-a-licious API, importProduct with image download into Convex storage). Covers FR-1 through FR-11.",
+  "status": "completed",
+  "phase": "implementation",
+  "complexity": "large",
+  "files_to_create": [
+    "packages/backend/convex/products.ts"
+  ],
+  "files_to_modify": [
+    "packages/backend/convex/schema.ts"
+  ],
+  "depends_on": [],
+  "commits": ["a256dc1"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T19:00:00Z",
+  "updated_at": "2026-02-06T19:30:00Z"
+}
