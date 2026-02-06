@@ -7,6 +7,7 @@ import {
 } from "~/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ManualProductForm } from "./manual-product-form";
+import { OpenFoodFactsSearch } from "./openfoodfacts-search";
 
 export function AddProductDialog({
   open,
@@ -17,7 +18,7 @@ export function AddProductDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Product</DialogTitle>
           <DialogDescription>
@@ -37,7 +38,7 @@ export function AddProductDialog({
             <ManualProductForm onSuccess={() => onOpenChange(false)} />
           </TabsContent>
           <TabsContent value="import">
-            <p className="text-muted-foreground py-4 text-sm">OpenFoodFacts import coming soon.</p>
+            <OpenFoodFactsSearch onImported={() => onOpenChange(false)} />
           </TabsContent>
         </Tabs>
       </DialogContent>

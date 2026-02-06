@@ -3,7 +3,7 @@
   "parent_id": "beads-20260206-126",
   "title": "Products page route + sidebar nav + product list",
   "description": "Create the /_authenticated/products route with debounced search input (300ms via @tanstack/pacer useDebouncedValue) and 'Add Product' button placeholder. Implement ProductList component with usePaginatedQuery + useVirtualizer for virtualized infinite scroll (initial 20 items, auto-load more on scroll). Implement ProductRow with image thumbnail (Avatar with fallback), name, and macro summary (calories, protein, carbs, fat as integers). Add 'Products' link to sidebar navigation in app-sidebar.tsx with Lucide Package icon. Create shared product-schema.ts with Zod validation schema. Covers FR-12, FR-13, FR-14, NFR-1, NFR-6, NFR-7, NFR-8.",
-  "status": "pending",
+  "status": "completed",
   "phase": "implementation",
   "complexity": "large",
   "files_to_create": [
@@ -19,9 +19,9 @@
     "beads-20260206-126-sub-01",
     "beads-20260206-126-sub-02"
   ],
-  "commits": [],
+  "commits": ["6f01989"],
   "comments": [],
   "contested_tests": [],
   "created_at": "2026-02-06T19:00:00Z",
-  "updated_at": "2026-02-06T19:00:00Z"
+  "updated_at": "2026-02-06T23:13:00Z"
 }
