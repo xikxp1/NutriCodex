@@ -3,7 +3,7 @@
   "parent_id": "beads-20260206-693",
   "title": "ShadCN UI Components",
   "description": "Create Button, Card, Input, and Label components in apps/web/src/components/ui/ following standard ShadCN patterns. Button uses class-variance-authority for variants (default, destructive, outline, secondary, ghost, link) and sizes (default, sm, lg, icon). Card exports Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter as simple div/heading wrappers. Input is a styled HTML input. Label is a styled native label element (no Radix dependency). All use the existing cn() utility from ~/lib/utils. Remove the .gitkeep placeholder file.",
-  "status": "pending",
+  "status": "completed",
   "complexity": "small",
   "depends_on": [],
   "files_to_create": [
@@ -16,7 +16,7 @@
   "files_to_delete": [
     "apps/web/src/components/ui/.gitkeep"
   ],
-  "commits": [],
+  "commits": ["b3c2185"],
   "comments": [],
   "contested_tests": [],
   "created_at": "2026-02-06T12:30:00Z",
