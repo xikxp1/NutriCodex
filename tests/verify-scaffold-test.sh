@@ -132,7 +132,7 @@ check_json_field() {
   fi
 }
 
-# Helper: check that a JSON field contains a substring
+# Helper: check that a JSON field contains a substring (fixed-string match)
 check_json_contains() {
   local filepath="$1"
   local expr="$2"
@@ -148,7 +148,7 @@ check_json_contains() {
     const val = ${expr};
     console.log(typeof val === 'object' ? JSON.stringify(val) : String(val));
   " 2>/dev/null) || true
-  if echo "${actual}" | grep -q "${substring}"; then
+  if echo "${actual}" | grep -Fq "${substring}"; then
     pass "${label}"
     return 0
   else
@@ -235,10 +235,10 @@ check_json_field "biome.json" "(data.linter || {}).enabled" "true" "FR-1.3: Biom
 check_json_field "biome.json" "((data.linter || {}).rules || {}).recommended" "true" "FR-1.3: Biome linter recommended rules enabled"
 check_json_field "biome.json" "(data.assist || {}).enabled" "true" "FR-1.3: Biome assist (import organizer) enabled"
 
-# Biome ignores
-check_json_contains "biome.json" "JSON.stringify((data.files || {}).ignore || [])" "node_modules" "FR-1.3: Biome ignores node_modules"
-check_json_contains "biome.json" "JSON.stringify((data.files || {}).ignore || [])" ".turbo" "FR-1.3: Biome ignores .turbo"
-check_json_contains "biome.json" "JSON.stringify((data.files || {}).ignore || [])" "convex/_generated" "FR-1.3: Biome ignores convex/_generated"
+# Biome file exclusions (Biome v2 uses files.includes with negation patterns instead of files.ignore)
+check_json_contains "biome.json" "JSON.stringify((data.files || {}).includes || [])" "!**/node_modules" "FR-1.3: Biome excludes node_modules"
+check_json_contains "biome.json" "JSON.stringify((data.files || {}).includes || [])" "!**/.turbo" "FR-1.3: Biome excludes .turbo"
+check_json_contains "biome.json" "JSON.stringify((data.files || {}).includes || [])" "!**/convex/_generated" "FR-1.3: Biome excludes convex/_generated"
 
 # --- FR-1.4: Root tsconfig.json ---
 check_file "tsconfig.json" "Root tsconfig.json"
@@ -446,9 +446,11 @@ check_file_contains "apps/web/src/lib/auth-server.ts" "convexBetterAuthReactStar
 check_file_contains "apps/web/src/lib/auth-server.ts" "handler" "FR-2.7: auth-server.ts exports handler"
 check_file_contains "apps/web/src/lib/auth-server.ts" "getToken" "FR-2.7: auth-server.ts exports getToken"
 
-check_file 'apps/web/src/routes/api/auth/$.ts' 'web auth API route ($.ts)'
-check_file_contains 'apps/web/src/routes/api/auth/$.ts' "createAPIFileRoute" "FR-2.7: auth route uses createAPIFileRoute"
-check_file_contains 'apps/web/src/routes/api/auth/$.ts' "handler" "FR-2.7: auth route delegates to handler"
+# Auth API route: TanStack Start 1.158+ removed createAPIFileRoute; the file
+# uses a '-' prefix to exclude it from TanStack Router's route file scanning
+# and exports GET/POST handlers directly.
+check_file 'apps/web/src/routes/api/auth/-$.ts' 'web auth API route (-$.ts)'
+check_file_contains 'apps/web/src/routes/api/auth/-$.ts' "handler" "FR-2.7: auth route delegates to handler"
 
 # --------------------------------------------------------------------------
 section "SUB-06: Expo Mobile App (FR-3)"

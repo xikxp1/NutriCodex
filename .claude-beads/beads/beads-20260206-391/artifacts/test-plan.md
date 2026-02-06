@@ -13,7 +13,7 @@
 |-------------|---------|-----------|-----------------|
 | FR-1.1 | sub-01 | tests/verify-scaffold-test.sh | Root package.json: private, workspaces, packageManager (bun) |
 | FR-1.2 | sub-01 | tests/verify-scaffold-test.sh | turbo.json: build/dev/lint/type-check/format tasks, dependsOn, outputs, persistent, cache settings |
-| FR-1.3 | sub-01 | tests/verify-scaffold-test.sh | biome.json: formatter (space, 2, 100), linter (recommended), assist, file ignores |
+| FR-1.3 | sub-01 | tests/verify-scaffold-test.sh | biome.json: formatter (space, 2, 100), linter (recommended), assist, file exclusions via files.includes negation patterns (Biome v2) |
 | FR-1.4 | sub-01 | tests/verify-scaffold-test.sh | Root tsconfig.json: extends typescript-config/base.json |
 | FR-1.5 | sub-01 | tests/verify-scaffold-test.sh | .gitignore: covers node_modules, .turbo, dist, .convex, .expo, .env |
 | FR-1.6 | sub-01 | tests/verify-scaffold-test.sh | .env.example: documents CONVEX, BETTER_AUTH_SECRET, SITE_URL, VITE_CONVEX_URL, EXPO_PUBLIC_CONVEX_URL |
@@ -28,7 +28,7 @@
 | FR-2.4 | sub-04 | tests/verify-scaffold-test.sh | Tailwind CSS v4: globals.css (tailwindcss import), vite.config.ts (tailwind plugin) |
 | FR-2.5 | sub-04 | tests/verify-scaffold-test.sh | ShadCN: components.json (aliases), utils.ts (clsx, twMerge), components/ui directory |
 | FR-2.6 | sub-04 | tests/verify-scaffold-test.sh | Workspace dependency: @nutricodex/backend uses workspace: protocol |
-| FR-2.7 | sub-05 | tests/verify-scaffold-test.sh | Auth scaffolding: auth-client.ts (createAuthClient, convexClient), auth-server.ts (convexBetterAuthReactStart, handler, getToken), $.ts (createAPIFileRoute, handler) |
+| FR-2.7 | sub-05 | tests/verify-scaffold-test.sh | Auth scaffolding: auth-client.ts (createAuthClient, convexClient), auth-server.ts (convexBetterAuthReactStart, handler, getToken), -$.ts (handler via GET/POST exports, TanStack Start 1.158+ pattern) |
 | FR-2.8 | sub-04 | tests/verify-scaffold-test.sh | vite.config.ts: ssr.noExternal configured |
 | FR-3.1 | sub-06 | tests/verify-scaffold-test.sh | mobile package.json: name, main (expo-router/entry), scripts |
 | FR-3.2 | sub-06 | tests/verify-scaffold-test.sh | mobile dependencies: expo, expo-router, react-native |
@@ -44,6 +44,26 @@
 | NFR-2 | sub-07 | tests/verify-scaffold-test.sh | TypeScript strictness: bun run type-check exits 0 |
 | NFR-5 | sub-07 | tests/verify-scaffold-test.sh | Build: bun run build succeeds |
 | NFR-6 | sub-07 | tests/verify-scaffold-test.sh | Biome: bun run lint passes |
+
+## Contested Test Resolutions
+
+Three tests were contested by the developer during sub-07 verification. All three were resolved in favor of the developer:
+
+### 1. `^build` regex issue (line 220 -- check_json_contains helper)
+
+**Verdict: Test was incorrect.** The `check_json_contains` helper used `grep -q` which interprets `^` as a regex start-of-line anchor. When checking for the literal string `^build` in `["^build"]`, the regex `^build` fails because the output starts with `[`, not `build`. Fixed by changing `grep -q` to `grep -Fq` (fixed-string matching) in the `check_json_contains` function. This was a systemic bug in the helper -- any substring containing regex metacharacters would be misinterpreted.
+
+### 2. Biome `files.ignore` vs `files.includes` (lines 239-241)
+
+**Verdict: Test was incorrect.** Biome v2.3.14 removed the `files.ignore` field. The architecture specification predated this breaking change. The actual implementation correctly uses `files.includes` with negation patterns (`!**/node_modules`, `!**/.turbo`, `!**/convex/_generated`). The tests were updated to check `(data.files || {}).includes` instead of `(data.files || {}).ignore` and to search for the negation patterns.
+
+### 3. Auth route file naming and API (lines 449-451)
+
+**Verdict: Test was incorrect.** TanStack Start 1.158.3 removed the `createAPIFileRoute` API. The architecture specification was written against an earlier version. The developer correctly adapted by:
+- Renaming the file from `$.ts` to `-$.ts` (the `-` prefix excludes it from TanStack Router's automatic route scanning)
+- Exporting `GET` and `POST` handler functions directly instead of using the removed `createAPIFileRoute` API
+
+The file check was updated to `apps/web/src/routes/api/auth/-$.ts`, the `createAPIFileRoute` content check was removed, and the `handler` check was preserved against the new file path.
 
 ## Coverage Goals
 
