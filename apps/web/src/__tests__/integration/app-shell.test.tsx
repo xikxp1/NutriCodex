@@ -8,7 +8,7 @@
  * - FR-5: 3+ placeholder nav items
  * - FR-6: Sticky top bar
  * - FR-7: "NutriCodex" in top bar or sidebar header
- * - FR-8: User name/avatar in profile area
+ * - FR-8: User name/avatar in profile area (TopBar UserMenu)
  * - FR-9: Dropdown menu with Sign Out
  * - FR-10: Main content area fills remaining space
  * - FR-12: Toggle button visible
@@ -87,7 +87,7 @@ describe("App Shell Integration", () => {
     expect(screen.getByText(/Food Log/i)).toBeInTheDocument();
     expect(screen.getByText(/Settings/i)).toBeInTheDocument();
 
-    // Verify user info (FR-8) - user name may appear in multiple places
+    // Verify user info (FR-8) - user name appears in TopBar UserMenu
     const userElements = screen.getAllByText("Test User");
     expect(userElements.length).toBeGreaterThanOrEqual(1);
 
@@ -156,7 +156,7 @@ describe("App Shell Integration", () => {
       </SidebarProvider>,
     );
 
-    // User name should appear (possibly in sidebar footer, top bar, or both)
+    // User name should appear in TopBar UserMenu
     const userElements = screen.getAllByText("Test User");
     expect(userElements.length).toBeGreaterThanOrEqual(1);
   });
