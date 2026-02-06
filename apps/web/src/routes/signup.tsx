@@ -9,7 +9,7 @@ import { authClient } from "~/lib/auth-client";
 
 import { getAuth } from "./__root";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/signup")({
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: (search.redirect as string) || "/",
   }),
@@ -19,13 +19,14 @@ export const Route = createFileRoute("/login")({
       throw redirect({ to: "/" });
     }
   },
-  component: LoginPage,
+  component: SignupPage,
 });
 
-function LoginPage() {
-  const { redirect: redirectTo } = useSearch({ from: "/login" });
+function SignupPage() {
+  const { redirect: redirectTo } = useSearch({ from: "/signup" });
   const navigate = useNavigate();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -36,8 +37,8 @@ function LoginPage() {
     setError(null);
     setIsPending(true);
 
-    await authClient.signIn.email(
-      { email, password },
+    await authClient.signUp.email(
+      { name, email, password },
       {
         onSuccess: () => {
           navigate({ to: redirectTo });
@@ -54,7 +55,7 @@ function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Log in to NutriCodex</CardTitle>
+          <CardTitle className="text-2xl">Create your account</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -63,6 +64,19 @@ function LoginPage() {
                 {error}
               </p>
             )}
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                autoComplete="name"
+              />
+            </div>
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">Email</Label>
@@ -86,24 +100,24 @@ function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your password"
-                autoComplete="current-password"
+                autoComplete="new-password"
               />
             </div>
 
             <Button type="submit" disabled={isPending} className="w-full">
-              {isPending ? "Logging in..." : "Log In"}
+              {isPending ? "Signing up..." : "Sign Up"}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="justify-center">
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <Link
-              to="/signup"
+              to="/login"
               search={{ redirect: redirectTo }}
               className="text-primary underline underline-offset-4 hover:text-primary/80"
             >
-              Sign up
+              Log in
             </Link>
           </p>
         </CardFooter>
