@@ -1,0 +1,24 @@
+{
+  "id": "beads-20260206-408-sub-07",
+  "parent_id": "beads-20260206-408",
+  "title": "ARCHITECTURE.md update",
+  "description": "Update the project root ARCHITECTURE.md to reflect all changes from this feature: (1) Data Model section: add household and householdMember tables, remove 'Application tables will be added in future tasks' note. (2) Project Structure: add new files (households.ts, onboarding.tsx, household.tsx, alert-dialog.tsx). (3) Component Map > apps/web: update Route Protection to mention two-step guard (auth + household), add onboarding route description, add household details route description, add AlertDialog to ShadCN UI components list, update UserMenu to mention 'My Household' link. (4) Component Map > packages/backend: add Household Functions entry. (5) API Boundaries: add Household API subsection. (6) Key Design Decisions: add mandatory household onboarding and userId-as-string decisions.",
+  "status": "pending",
+  "phase": "implementation",
+  "complexity": "small",
+  "depends_on": [
+    "beads-20260206-408-sub-01",
+    "beads-20260206-408-sub-02",
+    "beads-20260206-408-sub-03",
+    "beads-20260206-408-sub-04",
+    "beads-20260206-408-sub-05",
+    "beads-20260206-408-sub-06"
+  ],
+  "artifacts": {},
+  "children": [],
+  "commits": [],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T16:30:00Z",
+  "updated_at": "2026-02-06T16:30:00Z"
+}

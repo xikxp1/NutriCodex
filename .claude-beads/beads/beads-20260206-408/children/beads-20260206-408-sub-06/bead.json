@@ -1,0 +1,17 @@
+{
+  "id": "beads-20260206-408-sub-06",
+  "parent_id": "beads-20260206-408",
+  "title": "User menu household link",
+  "description": "Modify apps/web/src/components/layout/user-menu.tsx to add a 'My Household' DropdownMenuItem with a Lucide icon (Home or Users) that navigates to /household using TanStack Router Link component. Insert the item between the user info label and the Sign Out item, with Separators above and below. The menu structure becomes: [User Info Label] --- My Household --- Sign Out. Do NOT add any household-leaving logic here -- the 'Change Household' action lives exclusively on the household details page. Covers FR-18 (entry point to household page via user menu).",
+  "status": "pending",
+  "phase": "implementation",
+  "complexity": "small",
+  "depends_on": ["beads-20260206-408-sub-05"],
+  "artifacts": {},
+  "children": [],
+  "commits": [],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T16:30:00Z",
+  "updated_at": "2026-02-06T16:30:00Z"
+}
