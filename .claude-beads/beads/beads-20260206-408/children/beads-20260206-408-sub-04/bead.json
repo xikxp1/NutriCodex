@@ -3,15 +3,15 @@
   "parent_id": "beads-20260206-408",
   "title": "Onboarding page",
   "description": "Create apps/web/src/routes/onboarding.tsx as a standalone route (no app shell). Route has its own beforeLoad: (1) check auth via getAuth(), redirect to /login if not authenticated, (2) check household via getHouseholdStatus(), redirect to / if user already has a household. Page has centered layout matching login/signup style. Two sections toggled via Button components (variant=outline/default for active state): 'Create Household' section has Card with Label + Input for name and submit Button using useMutation(api.households.createHousehold). 'Join Household' section has Card with list from useQuery(api.households.listHouseholds), each row showing name, member count, and Join Button using useMutation(api.households.joinHousehold). Shows 'No households available' message when list is empty. Validation: non-empty, max 100 chars with inline errors. Loading: Skeleton for household list. On success: navigate to /. Covers FR-11 through FR-15, FR-22, NFR-05 through NFR-07.",
-  "status": "pending",
+  "status": "completed",
   "phase": "implementation",
   "complexity": "medium",
   "depends_on": ["beads-20260206-408-sub-01", "beads-20260206-408-sub-03"],
   "artifacts": {},
   "children": [],
-  "commits": [],
+  "commits": ["8ad2060"],
   "comments": [],
   "contested_tests": [],
   "created_at": "2026-02-06T16:30:00Z",
-  "updated_at": "2026-02-06T16:30:00Z"
+  "updated_at": "2026-02-06T17:25:00Z"
 }
