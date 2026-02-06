@@ -19,6 +19,8 @@
     "dev": "convex dev",
     "build": "echo 'No build step for backend package'",
     "lint": "biome check .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

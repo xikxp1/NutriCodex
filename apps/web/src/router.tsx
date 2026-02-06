@@ -6,7 +6,10 @@ import { ConvexProvider } from "convex/react";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
-  const convexUrl = import.meta.env.VITE_CONVEX_URL!;
+  const convexUrl = import.meta.env.VITE_CONVEX_URL;
+  if (!convexUrl) {
+    throw new Error("Missing VITE_CONVEX_URL environment variable");
+  }
 
   const convexQueryClient = new ConvexQueryClient(convexUrl);
   const queryClient = new QueryClient({

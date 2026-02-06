@@ -19,6 +19,7 @@
     },
     "format": {
       "cache": false
-    }
+    },
+    "format:check": {}
   }
 }

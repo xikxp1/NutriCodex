@@ -5,7 +5,10 @@ import { components } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import authConfig from "./auth.config";
 
-const siteUrl = process.env.SITE_URL!;
+const siteUrl = process.env.SITE_URL;
+if (!siteUrl) {
+  throw new Error("Missing SITE_URL environment variable");
+}
 
 export const authComponent = createClient<DataModel>(components.betterAuth);
 
