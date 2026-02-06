@@ -135,10 +135,10 @@ export function ProductDetailDialog({
               {product.barcode && <p>Barcode: {product.barcode}</p>}
             </div>
 
-            <DialogFooter className="gap-2 sm:gap-0">
+            <DialogFooter className="flex justify-end gap-2">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="sm">
+                  <Button variant="destructive">
                     <Trash2 className="size-4" />
                     Delete
                   </Button>
