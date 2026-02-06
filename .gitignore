@@ -1,0 +1,3 @@
+# Beads volatile state (not tracked in git)
+.claude-beads/state.json
+.claude-beads/audit.jsonl

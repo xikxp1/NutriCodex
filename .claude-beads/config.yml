@@ -1,0 +1,39 @@
+stack:
+  - name: Turborepo
+    docs: https://turbo.build/repo/docs
+  - name: TanStack Start
+    docs: https://tanstack.com/start/latest/docs
+  - name: Expo
+    docs: https://docs.expo.dev
+  - name: React Native
+    docs: https://reactnative.dev/docs/getting-started
+  - name: Convex
+    docs: https://docs.convex.dev
+  - name: ShadCN UI
+    docs: https://ui.shadcn.com/docs
+  - name: Tailwind CSS
+    docs: https://tailwindcss.com/docs
+  - name: React Native Reusables
+    docs: https://rnr-docs.vercel.app
+  - name: Uniwind
+    docs: https://docs.uniwind.dev
+  - name: Bun
+    docs: https://bun.sh/docs
+  - name: TypeScript
+    docs: https://www.typescriptlang.org/docs
+
+workflow:
+  loop_limits:
+    analyst_architect: 2
+    analyst_manager: 2
+    developer_validator: 3
+    developer_test_engineer: 1
+  user_checkpoints:
+    - post-requirements
+    - post-architecture
+    - post-planning
+    - final-review
+
+branch:
+  strategy: feature-branch
+  naming: "beads/{task-id}/{short-description}"
