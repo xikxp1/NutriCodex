@@ -2,7 +2,7 @@ import { api } from "@nutricodex/backend";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useAction } from "convex/react";
 import { Package, Search } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -69,9 +69,12 @@ export function OpenFoodFactsSearch({ onImported }: { onImported: () => void }) 
   const [currentPage, setCurrentPage] = useState(1);
   const [results, setResults] = useState<SearchResults | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [importingBarcode, setImportingBarcode] = useState<string | null>(null);
+  const [importingId, setImportingId] = useState<string | null>(null);
 
   const searchOpenFoodFacts = useAction(api.products.searchOpenFoodFacts);
+  const searchRef = useRef(searchOpenFoodFacts);
+  searchRef.current = searchOpenFoodFacts;
+
   const importProduct = useAction(api.products.importProduct);
 
   const prevQueryRef = useRef(debouncedQuery);
@@ -94,7 +97,8 @@ export function OpenFoodFactsSearch({ onImported }: { onImported: () => void }) 
     let cancelled = false;
     setIsSearching(true);
 
-    searchOpenFoodFacts({ query: debouncedQuery, page, pageSize: 10 })
+    searchRef
+      .current({ query: debouncedQuery, page, pageSize: 10 })
       .then((data) => {
         if (!cancelled) {
           setResults(data);
@@ -112,10 +116,16 @@ export function OpenFoodFactsSearch({ onImported }: { onImported: () => void }) 
     return () => {
       cancelled = true;
     };
-  }, [debouncedQuery, currentPage, searchOpenFoodFacts]);
+  }, [debouncedQuery, currentPage]);
 
-  const handleImport = async (product: OFFProduct) => {
-    setImportingBarcode(product.barcode);
+  const getProductId = useCallback(
+    (product: OFFProduct, index?: number) => product.barcode ?? `${product.name}-${index ?? 0}`,
+    [],
+  );
+
+  const handleImport = async (product: OFFProduct, index: number) => {
+    const productId = getProductId(product, index);
+    setImportingId(productId);
     try {
       await importProduct({
         name: product.name,
@@ -133,7 +143,7 @@ export function OpenFoodFactsSearch({ onImported }: { onImported: () => void }) 
     } catch (err) {
       toast.error((err as { data?: string })?.data ?? (err as Error)?.message ?? "Import failed");
     } finally {
-      setImportingBarcode(null);
+      setImportingId(null);
     }
   };
 
@@ -167,12 +177,12 @@ export function OpenFoodFactsSearch({ onImported }: { onImported: () => void }) 
             <p className="text-muted-foreground py-4 text-center text-sm">No products found.</p>
           ) : (
             <div className="flex flex-col gap-2">
-              {results.products.map((product) => (
+              {results.products.map((product, index) => (
                 <OFFProductCard
-                  key={product.barcode ?? product.name}
+                  key={product.barcode ?? `${product.name}-${index}`}
                   product={product}
-                  onImport={() => handleImport(product)}
-                  isImporting={importingBarcode === product.barcode}
+                  onImport={() => handleImport(product, index)}
+                  isImporting={importingId === getProductId(product, index)}
                 />
               ))}
             </div>
