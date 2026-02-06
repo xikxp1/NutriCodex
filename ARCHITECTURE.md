@@ -36,6 +36,8 @@ NutriCodex is a nutrition/food tracking application delivered as a Turborepo mon
 | Backend         | Convex                              | Real-time database, server functions       |
 | Auth            | Better Auth + Convex adapter        | Authentication (email/password, sessions)  |
 | Web Styling     | Tailwind CSS v4 + ShadCN UI         | Utility-first CSS, component library       |
+| Web Icons       | Lucide React                        | SVG icon library (ShadCN standard)         |
+| Web UI Prims    | @base-ui/react                      | Headless UI primitives for ShadCN components |
 | Mobile Styling  | Uniwind + React Native Reusables    | Tailwind bindings for React Native         |
 | Linting/Format  | Biome v2                            | Unified linter, formatter, import sorter   |
 | Type Checking   | TypeScript (strict mode)            | Static type safety across all packages     |
@@ -52,15 +54,20 @@ NutriCodex/
 |   |   `-- src/              # Source code, global styles, libs
 |   `-- web/                  # TanStack Start web app (@nutricodex/web)
 |       `-- src/
-|           |-- components/   # UI components (ShadCN UI)
-|           |   `-- ui/       # ShadCN primitives (Button, Card, Input, Label)
+|           |-- components/   # UI components
+|           |   |-- layout/   # App shell components (AppSidebar, TopBar, UserMenu)
+|           |   `-- ui/       # ShadCN primitives (Avatar, Button, Card, DropdownMenu,
+|           |                 #   Input, Label, Separator, Sheet, Sidebar, Skeleton, Tooltip)
+|           |-- hooks/        # Custom React hooks (useIsMobile)
 |           |-- lib/          # Utilities, auth client/server
 |           |-- routes/       # TanStack file-based routes
-|           |   |-- api/      # API routes (auth proxy)
-|           |   |-- login.tsx # Public login page
-|           |   |-- signup.tsx# Public signup page
-|           |   `-- index.tsx # Protected main screen
-|           `-- styles/       # Global CSS (Tailwind v4 + ShadCN theme vars)
+|           |   |-- _authenticated.tsx      # Authenticated layout route (app shell)
+|           |   |-- _authenticated/         # Protected child routes
+|           |   |   `-- index.tsx           # Main page (dashboard placeholder)
+|           |   |-- api/                    # API routes (auth proxy)
+|           |   |-- login.tsx               # Public login page
+|           |   `-- signup.tsx              # Public signup page
+|           `-- styles/       # Global CSS (Tailwind v4 + ShadCN theme vars + sidebar vars)
 |-- packages/
 |   |-- backend/              # Shared Convex backend (@nutricodex/backend)
 |   |   |-- convex/           # Convex schema, functions, auth config
@@ -78,10 +85,15 @@ NutriCodex/
 - **Entry**: `vite.config.ts` (TanStack Start plugin + Tailwind v4 plugin)
 - **Routing**: `src/routes/` directory (TanStack Router file-based routing)
 - **Auth**: Client-side auth via `src/lib/auth-client.ts`, server helpers via `src/lib/auth-server.ts`, proxy route at `src/routes/api/auth/-$.ts`
-- **Auth UI**: Login page (`/login`), signup page (`/signup`), protected main screen (`/`)
-- **Route Protection**: Server-side auth checks via `beforeLoad` + `createServerFn` wrapping `getToken()`. Unauthenticated users redirected to `/login` with `redirect` search parameter for post-login navigation.
+- **Auth UI**: Login page (`/login`), signup page (`/signup`), protected pages under `_authenticated/`
+- **Route Protection**: Pathless layout route `_authenticated.tsx` performs server-side auth check via `beforeLoad` + `createServerFn` wrapping `getToken()`. Unauthenticated users redirected to `/login` with `redirect` search parameter. All child routes under `_authenticated/` are automatically protected.
 - **Auth Provider**: `ConvexBetterAuthProvider` wraps the app in root layout, providing auth context to all routes. Receives `initialToken` for SSR hydration.
-- **Styling**: Tailwind CSS v4 via Vite plugin, ShadCN UI for components (Button, Card, Input, Label)
+- **App Shell**: Authenticated routes render inside an app shell layout built on the **ShadCN Sidebar component**:
+  - **SidebarProvider** (from `src/components/ui/sidebar.tsx`): Manages sidebar open/collapsed state with cookie persistence, keyboard shortcuts (Cmd/Ctrl+B), and mobile detection
+  - **AppSidebar** (`src/components/layout/app-sidebar.tsx`): Composes ShadCN `Sidebar` with `collapsible="icon"` mode. Contains SidebarHeader (app name), SidebarContent (nav menu with placeholder items), SidebarFooter (user info + dropdown)
+  - **TopBar** (`src/components/layout/top-bar.tsx`): Sticky top bar inside `SidebarInset` with `SidebarTrigger` and `UserMenu`
+  - **UserMenu** (`src/components/layout/user-menu.tsx`): User profile dropdown with sign-out action, using ShadCN `DropdownMenu` and `Avatar`
+- **Styling**: Tailwind CSS v4 via Vite plugin, ShadCN UI components (base-nova style with `@base-ui/react`), Lucide React for icons
 - **Data**: ConvexQueryClient (with `expectAuth: true`) bridges Convex real-time with TanStack Query for SSR
 - **Consumes**: `@nutricodex/backend` for typed Convex API
 
@@ -153,6 +165,10 @@ Application tables will be added to `packages/backend/convex/schema.ts` in futur
 
 6. **ConvexQueryClient for SSR**: Bridges Convex real-time subscriptions with TanStack Query for server-side rendering in TanStack Start. Uses `expectAuth: true` to prevent unauthenticated Convex function calls on the client.
 
-7. **Server-side route protection**: Auth checks run server-side via `createServerFn` + `getToken()` in TanStack Router `beforeLoad` hooks. Works consistently for both SSR and client-side navigation. Unauthenticated users are redirected to `/login?redirect=<original_url>`.
+7. **Server-side route protection via layout route**: Auth checks run server-side via `createServerFn` + `getToken()` in the `_authenticated.tsx` layout route's `beforeLoad` hook. All child routes under `_authenticated/` are automatically protected. Unauthenticated users are redirected to `/login?redirect=<original_url>`.
 
-8. **ShadCN UI components (copy-paste)**: UI primitives (Button, Card, Input, Label) are manually added to `apps/web/src/components/ui/`. No Radix UI dependency for basic components -- native HTML elements with Tailwind styling via CVA variants. Radix primitives can be added later when complex components (Dialog, Select, etc.) are needed.
+8. **ShadCN UI components (copy-paste, base-nova style)**: UI primitives are manually added to `apps/web/src/components/ui/`. Components use the base-nova style with `@base-ui/react` as the headless primitive library. This provides accessible, production-ready components with keyboard navigation, ARIA attributes, and consistent styling via CVA variants and Tailwind.
+
+9. **ShadCN Sidebar for app shell**: The app shell layout uses the full ShadCN Sidebar component (`sidebar.tsx`) rather than a custom implementation. The ShadCN Sidebar provides composable sub-components (SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, etc.), built-in `collapsible="icon"` mode, cookie-based state persistence, keyboard shortcuts (Cmd/Ctrl+B), mobile responsive Sheet drawer, and tooltip integration for collapsed items. This follows the project's ShadCN-first approach and avoids reinventing complex sidebar behavior.
+
+10. **@base-ui/react as headless UI layer**: ShadCN components (DropdownMenu, Avatar, Separator, Tooltip, Sheet, Sidebar internals) use `@base-ui/react` for accessible headless primitives. This is the recommended primitive library for the ShadCN base-nova style. It provides `mergeProps`, `useRender`, and component primitives (Menu, Dialog, Avatar, Tooltip, Separator).

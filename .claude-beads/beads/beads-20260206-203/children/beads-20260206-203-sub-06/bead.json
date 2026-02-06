@@ -1,0 +1,40 @@
+{
+  "id": "beads-20260206-203-sub-06",
+  "parent_id": "beads-20260206-203",
+  "title": "Integration testing and polish",
+  "status": "completed",
+  "phase": "implementation",
+  "files": [
+    "apps/web/src/routes/_authenticated.tsx",
+    "apps/web/src/components/layout/app-sidebar.tsx",
+    "apps/web/src/components/layout/top-bar.tsx",
+    "apps/web/src/components/layout/user-menu.tsx",
+    "apps/web/src/styles/globals.css",
+    "apps/web/package.json",
+    "apps/web/tsconfig.app.json"
+  ],
+  "depends_on": ["beads-20260206-203-sub-04", "beads-20260206-203-sub-05"],
+  "commits": ["a6e1546"],
+  "contested_tests": [
+    {
+      "test_file": "apps/web/src/__tests__/integration/app-shell.test.tsx",
+      "test_name": "renders the complete app shell with sidebar, top bar, and content area",
+      "rationale": "The test uses screen.getByText('Test User') on line 89, but 'Test User' appears in two places: the sidebar footer (AppSidebar SidebarFooter) and the top bar (UserMenu). getByText throws when multiple elements match. The test at line 157 in the same file correctly uses getAllByText for the same scenario.",
+      "suggested_fix": "Change line 89 from `expect(screen.getByText('Test User')).toBeInTheDocument()` to `expect(screen.getAllByText('Test User').length).toBeGreaterThanOrEqual(1)` or use `const userElements = screen.getAllByText('Test User'); expect(userElements.length).toBeGreaterThanOrEqual(1);`"
+    },
+    {
+      "test_file": "apps/web/src/__tests__/components/layout/app-sidebar.test.tsx",
+      "test_name": "falls back to email when user name is not available (FR-8)",
+      "rationale": "The mock cast `as ReturnType<typeof authClient.useSession>` on line 125 fails TypeScript type-checking because the mock object is missing `isRefetching` and `refetch` properties. This is a mock typing issue, not a runtime issue -- the test runs correctly at runtime.",
+      "suggested_fix": "Either cast through `unknown` first (`as unknown as ReturnType<typeof authClient.useSession>`) or add `isRefetching: false, refetch: vi.fn()` to the mock return value."
+    },
+    {
+      "test_file": "apps/web/src/__tests__/components/layout/user-menu.test.tsx",
+      "test_name": "displays email as fallback when name is not available (FR-8)",
+      "rationale": "Same issue as app-sidebar.test.tsx -- the mock cast `as ReturnType<typeof authClient.useSession>` on line 78 fails TypeScript type-checking because the mock object is missing `isRefetching` and `refetch` properties.",
+      "suggested_fix": "Either cast through `unknown` first (`as unknown as ReturnType<typeof authClient.useSession>`) or add `isRefetching: false, refetch: vi.fn()` to the mock return value."
+    }
+  ],
+  "created_at": "2026-02-06T14:30:00Z",
+  "updated_at": "2026-02-06T15:00:00Z"
+}

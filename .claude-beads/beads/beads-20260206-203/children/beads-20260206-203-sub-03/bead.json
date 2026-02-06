@@ -1,0 +1,19 @@
+{
+  "id": "beads-20260206-203-sub-03",
+  "parent_id": "beads-20260206-203",
+  "title": "Create layout route and migrate auth check",
+  "status": "completed",
+  "phase": "implementation",
+  "files": [
+    "apps/web/src/routes/_authenticated.tsx",
+    "apps/web/src/routes/_authenticated/index.tsx",
+    "apps/web/src/routes/index.tsx",
+    "apps/web/src/routes/__root.tsx",
+    "apps/web/src/styles/globals.css",
+    "apps/web/src/routeTree.gen.ts"
+  ],
+  "depends_on": ["beads-20260206-203-sub-02"],
+  "commits": ["bd0c850"],
+  "created_at": "2026-02-06T14:30:00Z",
+  "updated_at": "2026-02-06T14:32:00Z"
+}
