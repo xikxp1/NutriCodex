@@ -8,6 +8,7 @@ node_modules/
 dist/
 .output/
 .vinxi/
+.tanstack
 
 # Convex generated
 .convex/
@@ -30,9 +31,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-
-# Bun
-bun.lock
 
 # Beads volatile state (not tracked in git)
 .claude-beads/state.json
