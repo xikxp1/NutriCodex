@@ -1,0 +1,21 @@
+{
+  "id": "beads-20260206-693",
+  "parent_id": null,
+  "title": "Implement auth. Users should be able to login, create accounts and see main screen",
+  "status": "in-progress",
+  "phase": "planning",
+  "artifacts": {
+    "requirements.md": { "approved": true },
+    "architecture.md": { "approved": true }
+  },
+  "children": [
+    "beads-20260206-693-sub-01",
+    "beads-20260206-693-sub-02",
+    "beads-20260206-693-sub-03",
+    "beads-20260206-693-sub-04",
+    "beads-20260206-693-sub-05"
+  ],
+  "comments": [],
+  "created_at": "2026-02-06T12:00:00Z",
+  "updated_at": "2026-02-06T12:30:00Z"
+}

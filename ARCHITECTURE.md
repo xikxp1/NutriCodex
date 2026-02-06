@@ -52,10 +52,15 @@ NutriCodex/
 |   |   `-- src/              # Source code, global styles, libs
 |   `-- web/                  # TanStack Start web app (@nutricodex/web)
 |       `-- src/
-|           |-- components/   # UI components (ShadCN UI target)
+|           |-- components/   # UI components (ShadCN UI)
+|           |   `-- ui/       # ShadCN primitives (Button, Card, Input, Label)
 |           |-- lib/          # Utilities, auth client/server
 |           |-- routes/       # TanStack file-based routes
-|           `-- styles/       # Global CSS (Tailwind v4)
+|           |   |-- api/      # API routes (auth proxy)
+|           |   |-- login.tsx # Public login page
+|           |   |-- signup.tsx# Public signup page
+|           |   `-- index.tsx # Protected main screen
+|           `-- styles/       # Global CSS (Tailwind v4 + ShadCN theme vars)
 |-- packages/
 |   |-- backend/              # Shared Convex backend (@nutricodex/backend)
 |   |   |-- convex/           # Convex schema, functions, auth config
@@ -69,12 +74,15 @@ NutriCodex/
 ## Component Map
 
 ### apps/web (TanStack Start)
-- **Purpose**: SSR web application with file-based routing
+- **Purpose**: SSR web application with file-based routing and authentication
 - **Entry**: `vite.config.ts` (TanStack Start plugin + Tailwind v4 plugin)
 - **Routing**: `src/routes/` directory (TanStack Router file-based routing)
-- **Auth**: Client-side auth via `src/lib/auth-client.ts`, server helpers via `src/lib/auth-server.ts`, proxy route at `src/routes/api/auth/$.ts`
-- **Styling**: Tailwind CSS v4 via Vite plugin, ShadCN UI for components
-- **Data**: ConvexQueryClient bridges Convex real-time with TanStack Query for SSR
+- **Auth**: Client-side auth via `src/lib/auth-client.ts`, server helpers via `src/lib/auth-server.ts`, proxy route at `src/routes/api/auth/-$.ts`
+- **Auth UI**: Login page (`/login`), signup page (`/signup`), protected main screen (`/`)
+- **Route Protection**: Server-side auth checks via `beforeLoad` + `createServerFn` wrapping `getToken()`. Unauthenticated users redirected to `/login` with `redirect` search parameter for post-login navigation.
+- **Auth Provider**: `ConvexBetterAuthProvider` wraps the app in root layout, providing auth context to all routes. Receives `initialToken` for SSR hydration.
+- **Styling**: Tailwind CSS v4 via Vite plugin, ShadCN UI for components (Button, Card, Input, Label)
+- **Data**: ConvexQueryClient (with `expectAuth: true`) bridges Convex real-time with TanStack Query for SSR
 - **Consumes**: `@nutricodex/backend` for typed Convex API
 
 ### apps/mobile (Expo)
@@ -97,14 +105,14 @@ NutriCodex/
 
 ## Data Model
 
-Currently empty (scaffolding phase). Only Better Auth managed tables exist:
+Only Better Auth managed tables exist currently:
 
 | Table          | Managed By      | Purpose                  |
 |----------------|-----------------|--------------------------|
-| user           | Better Auth     | User accounts            |
-| session        | Better Auth     | Active sessions          |
-| account        | Better Auth     | Auth provider accounts   |
-| verification   | Better Auth     | Email verification tokens|
+| user           | Better Auth     | User accounts (name, email, image) |
+| session        | Better Auth     | Active sessions (token, expiry)    |
+| account        | Better Auth     | Auth provider accounts (email/password) |
+| verification   | Better Auth     | Email verification tokens (not used, verification disabled) |
 
 Application tables will be added to `packages/backend/convex/schema.ts` in future tasks.
 
@@ -120,10 +128,16 @@ Application tables will be added to `packages/backend/convex/schema.ts` in futur
 - Handles sign-up, sign-in, sign-out, session management
 - Accessible at the Convex site URL (`*.convex.site`)
 
-### Web Auth Proxy (apps/web/src/routes/api/auth/$.ts)
+### Web Auth Proxy (apps/web/src/routes/api/auth/-$.ts)
 - Catch-all API route in TanStack Start
 - Proxies auth requests from the web client to Convex HTTP routes
 - Enables cookie-based auth flow for SSR
+
+### Better Auth Client API (apps/web/src/lib/auth-client.ts)
+- `authClient.signUp.email({ name, email, password })` -- Create account
+- `authClient.signIn.email({ email, password })` -- Authenticate
+- `authClient.signOut()` -- End session
+- `authClient.useSession()` -- React hook returning `{ data, isPending, error }`
 
 ## Key Design Decisions
 
@@ -137,4 +151,8 @@ Application tables will be added to `packages/backend/convex/schema.ts` in futur
 
 5. **Better Auth with Convex adapter**: Auth handled at the Convex layer, shared across both apps. Web uses server-side proxy; mobile uses Expo secure storage.
 
-6. **ConvexQueryClient for SSR**: Bridges Convex real-time subscriptions with TanStack Query for server-side rendering in TanStack Start.
+6. **ConvexQueryClient for SSR**: Bridges Convex real-time subscriptions with TanStack Query for server-side rendering in TanStack Start. Uses `expectAuth: true` to prevent unauthenticated Convex function calls on the client.
+
+7. **Server-side route protection**: Auth checks run server-side via `createServerFn` + `getToken()` in TanStack Router `beforeLoad` hooks. Works consistently for both SSR and client-side navigation. Unauthenticated users are redirected to `/login?redirect=<original_url>`.
+
+8. **ShadCN UI components (copy-paste)**: UI primitives (Button, Card, Input, Label) are manually added to `apps/web/src/components/ui/`. No Radix UI dependency for basic components -- native HTML elements with Tailwind styling via CVA variants. Radix primitives can be added later when complex components (Dialog, Select, etc.) are needed.

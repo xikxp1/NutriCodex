@@ -1,0 +1,19 @@
+{
+  "id": "beads-20260206-693-sub-02",
+  "parent_id": "beads-20260206-693",
+  "title": "Router and Root Layout Auth Integration",
+  "description": "Modify apps/web/src/router.tsx: add { expectAuth: true } option to ConvexQueryClient constructor; add convexQueryClient to the context object passed to createTanStackRouter so beforeLoad functions can access it. Modify apps/web/src/routes/__root.tsx: extend the route context type to include convexQueryClient: ConvexQueryClient; add a beforeLoad hook that calls a createServerFn wrapping getToken() from auth-server.ts, then calls ctx.context.convexQueryClient.serverHttpClient?.setAuth(token) to enable SSR-authenticated Convex queries; wrap <Outlet /> with <ConvexBetterAuthProvider client={convexClient} authClient={authClient} initialToken={token}> using useRouteContext to access the convex client. The getAuth server function should be defined in __root.tsx (or a shared utility) and reused by protected routes.",
+  "status": "pending",
+  "complexity": "medium",
+  "depends_on": ["beads-20260206-693-sub-01"],
+  "files_to_create": [],
+  "files_to_modify": [
+    "apps/web/src/router.tsx",
+    "apps/web/src/routes/__root.tsx"
+  ],
+  "commits": [],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T12:30:00Z",
+  "updated_at": "2026-02-06T12:30:00Z"
+}
