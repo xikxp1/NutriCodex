@@ -35,3 +35,9 @@ Thumbs.db
 # Beads volatile state (not tracked in git)
 .claude-beads/state.json
 .claude-beads/audit.jsonl
+
+# Generated output
+.claude-beads/viz.html
+
+# Local documentation (potentially large, user-managed)
+.claude-beads/docs/
