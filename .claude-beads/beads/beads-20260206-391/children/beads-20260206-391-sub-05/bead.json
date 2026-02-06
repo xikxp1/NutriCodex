@@ -1,0 +1,27 @@
+{
+  "id": "beads-20260206-391-sub-05",
+  "parent_id": "beads-20260206-391",
+  "title": "Web app auth scaffolding",
+  "description": "Create the Better Auth client-side and server-side integration files for the web app. Includes src/lib/auth-client.ts (createAuthClient with convexClient plugin), src/lib/auth-server.ts (convexBetterAuthReactStart helper with getToken, fetchAuthQuery, etc.), and src/routes/api/auth/$.ts (API route handler that proxies GET and POST auth requests to Convex via the handler function). These files must type-check correctly but are not functionally operational until Convex is deployed and environment variables are set.",
+  "status": "completed",
+  "complexity": "small",
+  "depends_on": ["beads-20260206-391-sub-04"],
+  "files": [
+    "apps/web/src/lib/auth-client.ts",
+    "apps/web/src/lib/auth-server.ts",
+    "apps/web/src/routes/api/auth/$.ts"
+  ],
+  "acceptance_criteria": [
+    "src/lib/auth-client.ts creates auth client using createAuthClient from better-auth/react with convexClient() plugin",
+    "src/lib/auth-server.ts imports convexBetterAuthReactStart and exports handler, getToken, fetchAuthQuery, fetchAuthMutation, fetchAuthAction",
+    "src/lib/auth-server.ts reads VITE_CONVEX_URL and VITE_CONVEX_SITE_URL from process.env",
+    "src/routes/api/auth/$.ts creates API file route at /api/auth/$ with GET and POST handlers that delegate to the auth handler",
+    "All three files type-check without errors (tsc --noEmit passes)",
+    "FR-2.7 is satisfied"
+  ],
+  "commits": ["2fe9c5b"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T02:00:00Z",
+  "updated_at": "2026-02-06T03:00:00Z"
+}

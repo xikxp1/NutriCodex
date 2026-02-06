@@ -1,0 +1,38 @@
+{
+  "id": "beads-20260206-391-sub-03",
+  "parent_id": "beads-20260206-391",
+  "title": "Convex backend package",
+  "description": "Create packages/backend as a shared workspace package containing the Convex backend with Better Auth integration. Includes package.json (@nutricodex/backend with convex, @convex-dev/better-auth, better-auth@1.4.9 dependencies), tsconfig.json extending the shared base config, the convex/ directory with convex.config.ts (registers Better Auth component), schema.ts (empty schema placeholder), auth.config.ts (Better Auth provider config), auth.ts (Better Auth instance with Convex adapter), http.ts (HTTP route handler), and src/index.ts (re-exports Convex client utilities and typed API).",
+  "status": "completed",
+  "complexity": "medium",
+  "depends_on": ["beads-20260206-391-sub-02"],
+  "files": [
+    "packages/backend/package.json",
+    "packages/backend/tsconfig.json",
+    "packages/backend/src/index.ts",
+    "packages/backend/convex/convex.config.ts",
+    "packages/backend/convex/schema.ts",
+    "packages/backend/convex/auth.config.ts",
+    "packages/backend/convex/auth.ts",
+    "packages/backend/convex/http.ts"
+  ],
+  "acceptance_criteria": [
+    "packages/backend/package.json has name @nutricodex/backend, type module, correct main/types/exports fields",
+    "package.json has scripts: dev (convex dev), build, lint (biome check), type-check (tsc --noEmit)",
+    "Dependencies include convex ^1.31.5, @convex-dev/better-auth ^0.10.10, better-auth 1.4.9 (exact, not caret)",
+    "devDependencies include @nutricodex/typescript-config workspace:* and typescript",
+    "tsconfig.json extends @nutricodex/typescript-config/base.json, includes src and convex dirs, excludes _generated",
+    "convex/convex.config.ts imports and registers the Better Auth component via app.use(betterAuth)",
+    "convex/schema.ts defines an empty schema with defineSchema({})",
+    "convex/auth.config.ts exports auth config with getAuthConfigProvider()",
+    "convex/auth.ts creates Better Auth instance with Convex adapter, email/password enabled",
+    "convex/http.ts creates HTTP router and registers Better Auth routes",
+    "src/index.ts re-exports ConvexProvider, ConvexReactClient, useQuery, useMutation, useAction, ConvexBetterAuthProvider, api, DataModel, Doc, Id",
+    "FR-4.1, FR-4.2, FR-4.3, FR-4.4 are satisfied"
+  ],
+  "commits": ["826d699c81b934ff7c9ca049b1fb31380538578a"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T02:00:00Z",
+  "updated_at": "2026-02-06T02:35:00Z"
+}

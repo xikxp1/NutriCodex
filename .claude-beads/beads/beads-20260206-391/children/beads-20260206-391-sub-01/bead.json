@@ -1,0 +1,34 @@
+{
+  "id": "beads-20260206-391-sub-01",
+  "parent_id": "beads-20260206-391",
+  "title": "Root monorepo configuration",
+  "description": "Create the root-level configuration files that establish the Turborepo monorepo with Bun workspaces. This includes package.json (workspaces, scripts, devDependencies), turbo.json (task pipeline with build/dev/lint/type-check/format), biome.json (formatter + linter + import organizer), root tsconfig.json (minimal, extends typescript-config), .gitignore (comprehensive coverage for all tools), and .env.example (all required environment variables with placeholders).",
+  "status": "completed",
+  "complexity": "medium",
+  "depends_on": [],
+  "files": [
+    "package.json",
+    "turbo.json",
+    "biome.json",
+    "tsconfig.json",
+    ".gitignore",
+    ".env.example"
+  ],
+  "acceptance_criteria": [
+    "Root package.json exists with \"workspaces\": [\"apps/*\", \"packages/*\"], \"private\": true, and packageManager set to bun",
+    "Root package.json includes scripts: dev, dev:web, dev:mobile, dev:backend, build, lint, type-check, format",
+    "Root package.json includes devDependencies: turbo, @biomejs/biome, typescript",
+    "turbo.json defines tasks: build (dependsOn ^build, with outputs), dev (persistent, no cache), lint, type-check, format",
+    "biome.json has formatter enabled (2-space indent, 100 line width, LF endings), linter with recommended rules, and assist/import organizer enabled",
+    "biome.json ignores node_modules, .turbo, dist, .output, .convex, .expo, convex/_generated",
+    "Root tsconfig.json extends packages/typescript-config/base.json and excludes node_modules, apps, packages",
+    ".gitignore covers node_modules, .turbo, dist, .output, .vinxi, .convex, convex/_generated, .expo, .env files, OS files, IDE files",
+    ".env.example documents CONVEX_DEPLOYMENT, VITE_CONVEX_URL, VITE_CONVEX_SITE_URL, EXPO_PUBLIC_CONVEX_URL, EXPO_PUBLIC_CONVEX_SITE_URL, BETTER_AUTH_SECRET, SITE_URL",
+    "FR-1.1, FR-1.2, FR-1.3, FR-1.4, FR-1.5, FR-1.6, FR-6.1 through FR-6.8 are satisfied"
+  ],
+  "commits": ["2a953700a6aab27ad3137164afea4bb32c42df19"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T02:00:00Z",
+  "updated_at": "2026-02-06T02:35:00Z"
+}

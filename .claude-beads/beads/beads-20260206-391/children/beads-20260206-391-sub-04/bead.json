@@ -1,0 +1,42 @@
+{
+  "id": "beads-20260206-391-sub-04",
+  "parent_id": "beads-20260206-391",
+  "title": "TanStack Start web app",
+  "description": "Create apps/web as the TanStack Start web application with SSR, file-based routing, Tailwind CSS v4, and ShadCN UI configuration. Includes package.json (@nutricodex/web with all dependencies), tsconfig.json (extends react.json, path aliases), vite.config.ts (TanStack Start plugin, React, Tailwind CSS, tsconfig paths, SSR noExternal), app.config.ts (TanStack Start defineConfig with Node.js server preset), src/styles/globals.css (Tailwind v4 directives with ShadCN theme variables), src/router.tsx (ConvexQueryClient + TanStack Router integration), src/routes/__root.tsx (root layout with HTML document structure), src/routes/index.tsx (placeholder index page), src/lib/utils.ts (cn utility), src/components/ui/ (empty directory for ShadCN components), and components.json (ShadCN UI configuration).",
+  "status": "completed",
+  "complexity": "large",
+  "depends_on": ["beads-20260206-391-sub-02", "beads-20260206-391-sub-03"],
+  "files": [
+    "apps/web/package.json",
+    "apps/web/tsconfig.json",
+    "apps/web/vite.config.ts",
+    "apps/web/app.config.ts",
+    "apps/web/components.json",
+    "apps/web/src/styles/globals.css",
+    "apps/web/src/router.tsx",
+    "apps/web/src/routes/__root.tsx",
+    "apps/web/src/routes/index.tsx",
+    "apps/web/src/lib/utils.ts",
+    "apps/web/src/components/ui/.gitkeep"
+  ],
+  "acceptance_criteria": [
+    "apps/web/package.json has name @nutricodex/web, type module, scripts for dev/build/serve/lint/type-check",
+    "Dependencies include @tanstack/react-start, @tanstack/react-router, @tanstack/react-query, @convex-dev/react-query, @tanstack/react-router-with-query, react, react-dom, convex, @nutricodex/backend workspace:*, clsx, tailwind-merge, class-variance-authority",
+    "devDependencies include @nutricodex/typescript-config workspace:*, @tailwindcss/vite, tailwindcss, @vitejs/plugin-react, vite, vite-tsconfig-paths, typescript, @types/react, @types/react-dom",
+    "tsconfig.json extends @nutricodex/typescript-config/react.json with path aliases @/* and ~/* mapping to ./src/*",
+    "vite.config.ts configures TanStack Start plugin, React plugin, Tailwind CSS v4 Vite plugin, and tsconfig paths",
+    "vite.config.ts includes ssr.noExternal: ['@convex-dev/better-auth']",
+    "src/styles/globals.css imports tailwindcss and defines @theme block with ShadCN color and radius variables",
+    "src/router.tsx creates router with ConvexQueryClient, ConvexProvider wrapper, and typed route tree",
+    "src/routes/__root.tsx renders full HTML document with HeadContent, Outlet, Scripts, and meta tags",
+    "src/routes/index.tsx renders a minimal placeholder with 'NutriCodex' heading using Tailwind classes",
+    "src/lib/utils.ts exports cn() function using clsx and tailwind-merge",
+    "components.json configures ShadCN UI with new-york style, correct alias paths, and Tailwind v4 CSS path",
+    "FR-2.1 through FR-2.6, FR-2.8 are satisfied"
+  ],
+  "commits": ["338aed0725e02e819c00c5972b8b3a74b9453771"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T02:00:00Z",
+  "updated_at": "2026-02-06T02:45:00Z"
+}

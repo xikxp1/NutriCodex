@@ -1,0 +1,38 @@
+{
+  "id": "beads-20260206-391-sub-06",
+  "parent_id": "beads-20260206-391",
+  "title": "Expo mobile app",
+  "description": "Create apps/mobile as the Expo mobile application with Expo Router file-based routing, Uniwind for Tailwind-style utility classes, and React Native Reusables configuration. Includes package.json (@nutricodex/mobile with expo, expo-router, react-native, uniwind, convex, better-auth, and all other dependencies), app.json (Expo config with NutriCodex name, iOS/Android platforms, plugins), tsconfig.json (extends react-native.json), metro.config.js (withUniwindConfig for Taiwlind CSS processing), babel.config.js (Expo preset), src/global.css (Tailwind + Uniwind imports), app/_layout.tsx (root layout with ConvexProvider and PortalHost), app/index.tsx (placeholder home screen), and src/lib/auth-client.ts (Better Auth client with Expo plugin, SecureStore, convexClient).",
+  "status": "completed",
+  "complexity": "large",
+  "depends_on": ["beads-20260206-391-sub-02", "beads-20260206-391-sub-03"],
+  "files": [
+    "apps/mobile/package.json",
+    "apps/mobile/app.json",
+    "apps/mobile/tsconfig.json",
+    "apps/mobile/metro.config.js",
+    "apps/mobile/babel.config.js",
+    "apps/mobile/src/global.css",
+    "apps/mobile/src/lib/auth-client.ts",
+    "apps/mobile/app/_layout.tsx",
+    "apps/mobile/app/index.tsx"
+  ],
+  "acceptance_criteria": [
+    "apps/mobile/package.json has name @nutricodex/mobile, main set to expo-router/entry, scripts for start/dev/android/ios/lint/type-check",
+    "Dependencies include expo, expo-router, expo-secure-store, expo-status-bar, react, react-native, convex, @nutricodex/backend workspace:*, @convex-dev/better-auth, better-auth 1.4.9, @better-auth/expo 1.4.9, uniwind, tailwindcss, react-native-reanimated, react-native-safe-area-context, react-native-screens, @rn-primitives/portal, clsx, tailwind-merge, class-variance-authority",
+    "devDependencies include @nutricodex/typescript-config workspace:*, @types/react, typescript",
+    "app.json configures expo with name NutriCodex, slug nutricodex, platforms [ios, android], scheme nutricodex, bundleIdentifier, plugins for expo-router and expo-secure-store",
+    "tsconfig.json extends @nutricodex/typescript-config/react-native.json with path alias @/* mapping to ./*",
+    "metro.config.js uses getDefaultConfig and wraps with withUniwindConfig pointing to src/global.css",
+    "src/global.css imports tailwindcss and uniwind",
+    "app/_layout.tsx creates ConvexProvider with ConvexReactClient and wraps Slot, includes PortalHost and global.css import",
+    "app/index.tsx renders a minimal placeholder screen with NutriCodex text",
+    "src/lib/auth-client.ts creates auth client with expoClient plugin (SecureStore, scheme) and convexClient plugin",
+    "FR-3.1 through FR-3.8 are satisfied"
+  ],
+  "commits": ["fd6eab8"],
+  "comments": [],
+  "contested_tests": [],
+  "created_at": "2026-02-06T02:00:00Z",
+  "updated_at": "2026-02-06T02:39:00Z"
+}
