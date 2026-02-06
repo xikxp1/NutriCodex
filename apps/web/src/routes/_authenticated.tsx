@@ -27,11 +27,8 @@ export const Route = createFileRoute("/_authenticated")({
 
     const household = await getHouseholdStatus();
     if (!household) {
-      // The /onboarding route is created in a separate subtask (sub-04).
-      // Using `as string` to satisfy the router's strict route type checking
-      // until the route file is added and route types are regenerated.
       throw redirect({
-        to: "/onboarding" as string,
+        to: "/onboarding",
       });
     }
   },

@@ -1,4 +1,3 @@
-import type { Id } from "@nutricodex/backend";
 import { api } from "@nutricodex/backend";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
@@ -38,8 +37,20 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
+type HouseholdMember = {
+  _id: string;
+  userId: string;
+  name: string;
+  email: string;
+  image: string | null;
+};
+
 function HouseholdPage() {
   const household = useQuery(api.households.getMyHousehold);
+  const members = useQuery(
+    api.households.getHouseholdMembers,
+    household ? { householdId: household._id } : "skip",
+  );
 
   if (household === undefined) {
     return <HouseholdPageSkeleton />;
@@ -60,11 +71,11 @@ function HouseholdPage() {
 
       <Separator />
 
-      <MembersSection householdId={household._id} />
+      <MembersSection members={members} />
 
       <Separator />
 
-      <LeaveHouseholdSection householdId={household._id} householdName={household.name} />
+      <LeaveHouseholdSection householdName={household.name} members={members} />
     </div>
   );
 }
@@ -178,10 +189,7 @@ function HouseholdNameSection({ householdName }: { householdName: string }) {
   );
 }
 
-function MembersSection({ householdId }: { householdId: Id<"household"> }) {
-  const members = useQuery(api.households.getHouseholdMembers, {
-    householdId,
-  });
+function MembersSection({ members }: { members: HouseholdMember[] | undefined }) {
   const { data: session } = authClient.useSession();
   const currentUserId = session?.user?.id;
 
@@ -237,17 +245,14 @@ function MembersSection({ householdId }: { householdId: Id<"household"> }) {
 }
 
 function LeaveHouseholdSection({
-  householdId,
   householdName,
+  members,
 }: {
-  householdId: Id<"household">;
   householdName: string;
+  members: HouseholdMember[] | undefined;
 }) {
   const navigate = useNavigate();
   const leaveHousehold = useMutation(api.households.leaveHousehold);
-  const members = useQuery(api.households.getHouseholdMembers, {
-    householdId,
-  });
 
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
