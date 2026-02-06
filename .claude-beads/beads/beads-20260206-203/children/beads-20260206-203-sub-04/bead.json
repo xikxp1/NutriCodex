@@ -2,13 +2,35 @@
   "id": "beads-20260206-203-sub-04",
   "parent_id": "beads-20260206-203",
   "title": "Build AppSidebar component with navigation and user footer",
-  "status": "pending",
+  "status": "completed",
   "phase": "implementation",
   "files": [
     "apps/web/src/components/layout/app-sidebar.tsx",
-    "apps/web/src/routes/_authenticated.tsx"
+    "apps/web/src/routes/_authenticated.tsx",
+    "apps/web/src/hooks/use-mobile.ts"
   ],
   "depends_on": ["beads-20260206-203-sub-03"],
+  "commits": ["73ee2aa"],
+  "contested_tests": [
+    {
+      "test_file": "apps/web/src/__tests__/integration/app-shell.test.tsx",
+      "test_name": "renders the complete app shell with sidebar, top bar, and content area",
+      "rationale": "The test uses screen.getByText('Test User') at line 89 which expects exactly one element, but both AppSidebar footer and TopBar's UserMenu render 'Test User' as visible text. The test should use getAllByText instead of getByText since user info intentionally appears in both the sidebar footer and the top bar.",
+      "suggested_fix": "Change line 89 from expect(screen.getByText('Test User')).toBeInTheDocument() to: const userElements = screen.getAllByText('Test User'); expect(userElements.length).toBeGreaterThanOrEqual(1);"
+    },
+    {
+      "test_file": "apps/web/src/__tests__/components/layout/app-sidebar.test.tsx",
+      "test_name": "falls back to email when user name is not available (FR-8)",
+      "rationale": "The mock return type at line 115 is missing 'isRefetching' and 'refetch' properties required by the authClient.useSession() return type, causing a TypeScript error (TS2352). The test runs fine at runtime but fails type-check.",
+      "suggested_fix": "Add isRefetching: false and refetch: vi.fn() to the mock return value, or cast through 'unknown' first: as unknown as ReturnType<typeof authClient.useSession>"
+    },
+    {
+      "test_file": "apps/web/src/__tests__/components/layout/user-menu.test.tsx",
+      "test_name": "falls back to email when user name is not available",
+      "rationale": "The mock return type at line 68 is missing 'isRefetching' and 'refetch' properties required by the authClient.useSession() return type, causing a TypeScript error (TS2352). The test runs fine at runtime but fails type-check.",
+      "suggested_fix": "Add isRefetching: false and refetch: vi.fn() to the mock return value, or cast through 'unknown' first: as unknown as ReturnType<typeof authClient.useSession>"
+    }
+  ],
   "created_at": "2026-02-06T14:30:00Z",
-  "updated_at": "2026-02-06T14:30:00Z"
+  "updated_at": "2026-02-06T14:46:00Z"
 }
