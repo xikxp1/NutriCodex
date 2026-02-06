@@ -1,13 +1,16 @@
 import { api } from "@nutricodex/backend";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { usePaginatedQuery } from "convex/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Skeleton } from "~/components/ui/skeleton";
 
+import { ProductDetailDialog } from "./product-detail-dialog";
 import { ProductRow } from "./product-row";
 
 export function ProductList({ nameFilter }: { nameFilter: string }) {
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
   const { results, status, loadMore } = usePaginatedQuery(
     api.products.getProducts,
     { nameFilter: nameFilter || undefined },
@@ -58,38 +61,43 @@ export function ProductList({ nameFilter }: { nameFilter: string }) {
   }
 
   return (
-    <div ref={scrollContainerRef} className="h-[calc(100vh-12rem)] overflow-y-auto">
-      <div
-        style={{
-          height: `${virtualizer.getTotalSize()}px`,
-          position: "relative",
-          width: "100%",
-        }}
-      >
-        {virtualItems.map((virtualItem) => {
-          const product = results[virtualItem.index];
-          return (
-            <div
-              key={product._id}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: `${virtualItem.size}px`,
-                transform: `translateY(${virtualItem.start}px)`,
-              }}
-            >
-              <ProductRow
-                product={product}
-                onClick={() => {
-                  /* placeholder for detail dialog */
+    <>
+      <div ref={scrollContainerRef} className="h-[calc(100vh-12rem)] overflow-y-auto">
+        <div
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            position: "relative",
+            width: "100%",
+          }}
+        >
+          {virtualItems.map((virtualItem) => {
+            const product = results[virtualItem.index];
+            return (
+              <div
+                key={product._id}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: `${virtualItem.size}px`,
+                  transform: `translateY(${virtualItem.start}px)`,
                 }}
-              />
-            </div>
-          );
-        })}
+              >
+                <ProductRow product={product} onClick={() => setSelectedProductId(product._id)} />
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
+
+      <ProductDetailDialog
+        productId={selectedProductId}
+        open={selectedProductId !== null}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) setSelectedProductId(null);
+        }}
+      />
+    </>
   );
 }
