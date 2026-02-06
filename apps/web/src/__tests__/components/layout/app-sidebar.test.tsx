@@ -28,6 +28,8 @@ vi.mock("~/lib/auth-client", () => ({
       },
       isPending: false,
       error: null,
+      isRefetching: false,
+      refetch: vi.fn(),
     })),
     signOut: vi.fn(),
   },
@@ -122,6 +124,8 @@ describe("AppSidebar component", () => {
       },
       isPending: false,
       error: null,
+      isRefetching: false,
+      refetch: vi.fn(),
     } as ReturnType<typeof authClient.useSession>);
 
     const { SidebarProvider } = await import("~/components/ui/sidebar");

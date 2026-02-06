@@ -38,6 +38,8 @@ vi.mock("~/lib/auth-client", () => ({
       },
       isPending: false,
       error: null,
+      isRefetching: false,
+      refetch: vi.fn(),
     })),
     signOut: mockSignOut,
   },
@@ -85,8 +87,9 @@ describe("App Shell Integration", () => {
     expect(screen.getByText(/Food Log/i)).toBeInTheDocument();
     expect(screen.getByText(/Settings/i)).toBeInTheDocument();
 
-    // Verify user info (FR-8)
-    expect(screen.getByText("Test User")).toBeInTheDocument();
+    // Verify user info (FR-8) - user name may appear in multiple places
+    const userElements = screen.getAllByText("Test User");
+    expect(userElements.length).toBeGreaterThanOrEqual(1);
 
     // Verify main content area (FR-10)
     expect(screen.getByText("Main content")).toBeInTheDocument();
