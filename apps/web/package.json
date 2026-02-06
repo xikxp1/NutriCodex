@@ -13,9 +13,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@nutricodex/backend": "workspace:*",
+    "@base-ui/react": "^1.1.0",
     "@convex-dev/better-auth": "^0.10.10",
     "@convex-dev/react-query": "^0.1.0",
+    "@nutricodex/backend": "workspace:*",
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-router": "^1.151.6",
     "@tanstack/react-router-with-query": "^1.130.17",
@@ -24,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "convex": "^1.31.5",
+    "lucide-react": "^0.563.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.0"
