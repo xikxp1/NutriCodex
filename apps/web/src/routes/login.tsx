@@ -10,9 +10,13 @@ import { authClient } from "~/lib/auth-client";
 import { getAuth } from "./__root";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    redirect: (search.redirect as string) || "/",
-  }),
+  validateSearch: (search: Record<string, unknown>) => {
+    const redirect =
+      typeof search.redirect === "string" && search.redirect.startsWith("/")
+        ? search.redirect
+        : "/";
+    return { redirect };
+  },
   beforeLoad: async () => {
     const token = await getAuth();
     if (token) {
