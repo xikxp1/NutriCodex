@@ -1,6 +1,6 @@
-import { Slot } from "expo-router";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { PortalHost } from "@rn-primitives/portal";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { Slot } from "expo-router";
 import "../src/global.css";
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!);

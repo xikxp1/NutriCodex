@@ -1,5 +1,5 @@
-import { Outlet, HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -11,9 +11,7 @@ export const Route = createRootRouteWithContext<{
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "NutriCodex" },
     ],
-    links: [
-      { rel: "stylesheet", href: "/src/styles/globals.css" },
-    ],
+    links: [{ rel: "stylesheet", href: "/src/styles/globals.css" }],
   }),
 });
 

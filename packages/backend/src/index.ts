@@ -1,6 +1,7 @@
 // Re-export Convex client utilities for apps
-export { ConvexProvider, ConvexReactClient, useQuery, useMutation, useAction } from "convex/react";
+
 export { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+export { ConvexProvider, ConvexReactClient, useAction, useMutation, useQuery } from "convex/react";
 
 // Re-export typed API (available after `convex dev` generates types)
 // Apps should import: import { api } from "@nutricodex/backend"

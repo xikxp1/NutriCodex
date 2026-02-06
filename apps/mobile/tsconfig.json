@@ -5,7 +5,8 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "noEmit": true
+    "noEmit": true,
+    "types": ["react-native", "node"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
   "exclude": ["node_modules"]
