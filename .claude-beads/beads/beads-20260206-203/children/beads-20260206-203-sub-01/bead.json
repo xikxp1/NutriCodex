@@ -1,0 +1,18 @@
+{
+  "id": "beads-20260206-203-sub-01",
+  "parent_id": "beads-20260206-203",
+  "title": "Install dependencies and add foundational ShadCN UI components",
+  "status": "pending",
+  "phase": "implementation",
+  "files": [
+    "apps/web/package.json",
+    "apps/web/src/hooks/use-mobile.ts",
+    "apps/web/src/components/ui/skeleton.tsx",
+    "apps/web/src/components/ui/separator.tsx",
+    "apps/web/src/components/ui/tooltip.tsx",
+    "apps/web/src/components/ui/button.tsx"
+  ],
+  "depends_on": [],
+  "created_at": "2026-02-06T14:30:00Z",
+  "updated_at": "2026-02-06T14:30:00Z"
+}
