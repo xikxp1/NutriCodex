@@ -1,57 +1,66 @@
-/**
- * Tests for _authenticated layout route structure (sub-03)
- *
- * Requirements covered:
- * - FR-1: Layout route wraps authenticated pages with app shell
- * - FR-10: Main content area occupies remaining viewport space
- * - FR-11: Route protection logic preserved (beforeLoad auth check)
- * - NFR-3: SSR-compatible, no window/document access during rendering
- * - NFR-8: Does not interfere with ConvexBetterAuthProvider
- *
- * NOTE: Full TanStack Router integration tests are not feasible without
- * the complete router context. These tests verify the structural aspects
- * of the layout that can be tested in isolation.
- */
-import { describe, expect, it } from "vitest";
+import { render, screen } from "@testing-library/react";
+import React from "react";
+import { describe, expect, it, vi } from "vitest";
 
-// These are structural/module-level tests that verify the route file exists
-// and exports the expected interface.
+vi.mock("@tanstack/react-start", () => ({
+  createServerFn: () => ({
+    handler: (fn: any) => fn,
+  }),
+}));
 
-describe("_authenticated layout route module", () => {
-  it("exports a Route object from _authenticated.tsx", async () => {
-    // This test will fail until the file is created in sub-03
-    // The route module should export a Route created via createFileRoute
-    try {
-      const mod = await import("~/routes/_authenticated");
-      expect(mod.Route).toBeDefined();
-    } catch {
-      // Expected to fail before implementation
-      expect(true).toBe(true);
-    }
+vi.mock("@tanstack/react-router", () => ({
+  createFileRoute: () => (opts: any) => opts,
+  Outlet: () => React.createElement("div", { "data-testid": "outlet" }, "Page Content"),
+  redirect: vi.fn(),
+}));
+
+vi.mock("~/lib/auth-server", () => ({
+  fetchAuthQuery: vi.fn().mockResolvedValue(null),
+}));
+
+vi.mock("@nutricodex/backend", () => ({
+  api: {
+    households: {
+      getMyHousehold: "getMyHousehold",
+    },
+  },
+}));
+
+vi.mock("~/components/layout/app-sidebar", () => ({
+  AppSidebar: () => React.createElement("nav", { "data-testid": "sidebar" }, "Sidebar"),
+}));
+
+vi.mock("~/components/layout/top-bar", () => ({
+  TopBar: () => React.createElement("header", { "data-testid": "topbar" }, "Top Bar"),
+}));
+
+vi.mock("~/components/ui/sidebar", () => ({
+  SidebarProvider: ({ children }: any) =>
+    React.createElement("div", { "data-testid": "sidebar-provider" }, children),
+  SidebarInset: ({ children }: any) =>
+    React.createElement("main", { "data-testid": "sidebar-inset" }, children),
+}));
+
+import { Route } from "~/routes/_authenticated";
+
+const RouteOpts = Route as unknown as { component: React.FC };
+
+describe("_authenticated layout component", () => {
+  it("renders the app shell with sidebar, top bar, and outlet", () => {
+    const AuthenticatedLayout = RouteOpts.component;
+    render(<AuthenticatedLayout />);
+
+    expect(screen.getByTestId("sidebar-provider")).toBeInTheDocument();
+    expect(screen.getByTestId("sidebar")).toBeInTheDocument();
+    expect(screen.getByTestId("topbar")).toBeInTheDocument();
+    expect(screen.getByTestId("outlet")).toBeInTheDocument();
   });
-});
 
-describe("_authenticated/index.tsx route module", () => {
-  it("exports a Route object for the dashboard page", async () => {
-    // This test will fail until the file is created in sub-03
-    try {
-      const mod = await import("~/routes/_authenticated/index");
-      expect(mod.Route).toBeDefined();
-    } catch {
-      // Expected to fail before implementation
-      expect(true).toBe(true);
-    }
-  });
-});
+  it("renders outlet content inside sidebar inset", () => {
+    const AuthenticatedLayout = RouteOpts.component;
+    render(<AuthenticatedLayout />);
 
-describe("CSS variables for sidebar theme (sub-03)", () => {
-  it("documents that globals.css should contain sidebar CSS variables", () => {
-    // This is a documentation test -- the actual CSS variables are verified
-    // via visual inspection and the build process.
-    // Required variables from architecture:
-    const requiredVariables = ["--sidebar-width", "--sidebar-width-icon"];
-
-    // This test serves as documentation of what should exist
-    expect(requiredVariables).toHaveLength(2);
+    const inset = screen.getByTestId("sidebar-inset");
+    expect(inset).toContainElement(screen.getByTestId("outlet"));
   });
 });
