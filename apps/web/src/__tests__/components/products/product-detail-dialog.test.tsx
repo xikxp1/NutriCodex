@@ -1,98 +1,126 @@
-/**
- * Tests for ProductDetailDialog component (sub-06)
- *
- * Requirements covered:
- * - FR-19: Product detail view with name, image, nutrition facts, source, barcode
- * - FR-19: Edit button enables editing, Delete button with AlertDialog confirmation
- * - FR-23: Success/error toasts for update and delete operations
- * - Architecture: Interface { productId, open, onOpenChange }
- *
- * NOTE: The product-detail-dialog.tsx file does not exist yet. Vite's import
- * analysis resolves modules at transform time and rejects non-existent files
- * even when inside try/catch. These are specification-style tests that document
- * the expected component behavior. Once the file is created by the developer
- * (sub-06), these tests should be updated to import and verify the actual component.
- */
-import { describe, expect, it } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-describe("ProductDetailDialog component specification (sub-06)", () => {
-  it("must export ProductDetailDialog as a function component", () => {
-    // export function ProductDetailDialog({ productId, open, onOpenChange }: ProductDetailDialogProps)
-    expect(true).toBe(true);
+const mockUseQuery = vi.fn();
+
+vi.mock("convex/react", () => ({
+  useQuery: (...args: any[]) => mockUseQuery(...args),
+  useMutation: () => vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("@nutricodex/backend", () => ({
+  api: {
+    products: {
+      getProduct: "getProduct",
+      deleteProduct: "deleteProduct",
+    },
+  },
+}));
+
+vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
+
+vi.mock("lucide-react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("lucide-react")>();
+  return {
+    ...actual,
+    Pencil: (props: any) => <svg data-testid="pencil-icon" {...props} />,
+    Trash2: (props: any) => <svg data-testid="trash-icon" {...props} />,
+  };
+});
+
+vi.mock("~/components/products/product-edit-form", () => ({
+  ProductEditForm: () => <div data-testid="edit-form">Edit Form</div>,
+}));
+
+import { ProductDetailDialog } from "~/components/products/product-detail-dialog";
+
+const mockProduct = {
+  _id: "product-1",
+  name: "Test Banana",
+  macronutrients: { calories: 89, protein: 1, carbs: 23, fat: 0 },
+  imageUrl: null,
+  source: "manual" as const,
+};
+
+describe("ProductDetailDialog component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it("accepts productId, open, and onOpenChange props (Architecture)", () => {
-    // Interface: {
-    //   productId: Id<"product"> | null;
-    //   open: boolean;
-    //   onOpenChange: (open: boolean) => void;
-    // }
-    expect(true).toBe(true);
+  it("shows loading skeletons when product is undefined", () => {
+    mockUseQuery.mockReturnValue(undefined);
+
+    render(<ProductDetailDialog productId="product-1" open={true} onOpenChange={vi.fn()} />);
+
+    // Dialog content renders in a portal, so query the full document
+    const skeletons = document.querySelectorAll("[data-slot='skeleton']");
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
-  it("uses ShadCN Dialog for the modal overlay (FR-19)", () => {
-    // Imports Dialog, DialogContent, etc. from ~/components/ui/dialog
-    expect(true).toBe(true);
+  it("displays product name as dialog title when loaded", () => {
+    mockUseQuery.mockReturnValue(mockProduct);
+
+    render(<ProductDetailDialog productId="product-1" open={true} onOpenChange={vi.fn()} />);
+
+    expect(screen.getByText("Test Banana")).toBeInTheDocument();
   });
 
-  it("fetches product data via useQuery(api.products.getProduct) (FR-19)", () => {
-    // const product = useQuery(api.products.getProduct, productId ? { productId } : "skip")
-    expect(true).toBe(true);
+  it("displays macronutrient values", () => {
+    mockUseQuery.mockReturnValue({
+      ...mockProduct,
+      macronutrients: { calories: 100, protein: 10, carbs: 20, fat: 5 },
+    });
+
+    render(<ProductDetailDialog productId="product-1" open={true} onOpenChange={vi.fn()} />);
+
+    expect(screen.getByText("100")).toBeInTheDocument();
+    expect(screen.getByText("10g")).toBeInTheDocument();
+    expect(screen.getByText("20g")).toBeInTheDocument();
+    expect(screen.getByText("5g")).toBeInTheDocument();
   });
 
-  it("displays product name in view mode (FR-19)", () => {
-    expect(true).toBe(true);
+  it("displays 'Source: Manual' for manual products", () => {
+    mockUseQuery.mockReturnValue(mockProduct);
+
+    render(<ProductDetailDialog productId="product-1" open={true} onOpenChange={vi.fn()} />);
+
+    expect(screen.getByText("Source: Manual")).toBeInTheDocument();
   });
 
-  it("displays product image from Convex storage if available (FR-19)", () => {
-    // Image loaded via resolved imageUrl from getProduct query
-    expect(true).toBe(true);
+  it("displays 'Source: OpenFoodFacts' for imported products", () => {
+    mockUseQuery.mockReturnValue({ ...mockProduct, source: "openfoodfacts", barcode: "123" });
+
+    render(<ProductDetailDialog productId="product-1" open={true} onOpenChange={vi.fn()} />);
+
+    expect(screen.getByText("Source: OpenFoodFacts")).toBeInTheDocument();
   });
 
-  it("displays nutrition facts: calories, protein, carbs, fat per 100g as integers (FR-19)", () => {
-    expect(true).toBe(true);
+  it("displays barcode when present", () => {
+    mockUseQuery.mockReturnValue({
+      ...mockProduct,
+      source: "openfoodfacts",
+      barcode: "1234567890",
+    });
+
+    render(<ProductDetailDialog productId="product-1" open={true} onOpenChange={vi.fn()} />);
+
+    expect(screen.getByText("Barcode: 1234567890")).toBeInTheDocument();
   });
 
-  it("displays source indicator: manual or openfoodfacts (FR-19)", () => {
-    expect(true).toBe(true);
+  it("renders Edit and Delete buttons in view mode", () => {
+    mockUseQuery.mockReturnValue(mockProduct);
+
+    render(<ProductDetailDialog productId="product-1" open={true} onOpenChange={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /delete/i })).toBeInTheDocument();
   });
 
-  it("displays barcode if present (imported from OpenFoodFacts) (FR-19)", () => {
-    expect(true).toBe(true);
-  });
+  it("does not render content when dialog is closed", () => {
+    mockUseQuery.mockReturnValue(mockProduct);
 
-  it("has an Edit button that switches to edit mode (FR-19)", () => {
-    // Clicking Edit renders ProductEditForm with pre-populated values
-    expect(true).toBe(true);
-  });
+    render(<ProductDetailDialog productId="product-1" open={false} onOpenChange={vi.fn()} />);
 
-  it("has a Delete button that shows AlertDialog confirmation (FR-19)", () => {
-    // ShadCN AlertDialog with:
-    // - Title: "Delete Product?" or similar
-    // - Description: warning message
-    // - Cancel button
-    // - Confirm/Delete button
-    expect(true).toBe(true);
-  });
-
-  it("delete calls deleteProduct mutation on confirmation (FR-19)", () => {
-    // useMutation(api.products.deleteProduct)
-    // Passes { productId } to the mutation
-    expect(true).toBe(true);
-  });
-
-  it("shows toast.success after successful delete (FR-23)", () => {
-    // toast.success("Product deleted") or similar
-    expect(true).toBe(true);
-  });
-
-  it("shows toast.error on delete failure (FR-23)", () => {
-    // toast.error("Failed to delete product") with error message
-    expect(true).toBe(true);
-  });
-
-  it("file location must be apps/web/src/components/products/product-detail-dialog.tsx", () => {
-    const expectedPath = "apps/web/src/components/products/product-detail-dialog.tsx";
-    expect(expectedPath).toContain("components/products/product-detail-dialog.tsx");
+    expect(screen.queryByText("Test Banana")).not.toBeInTheDocument();
   });
 });

@@ -1,60 +1,52 @@
-/**
- * Tests for ShadCN Tabs component exports (sub-02)
- *
- * Requirements covered:
- * - FR-15: Tabs used in Add Product dialog (Manual / Import modes)
- * - NFR-5: ShadCN-first design system
- * - Architecture: Tabs component exports following ShadCN pattern
- *
- * NOTE: The tabs.tsx file does not exist yet. Vite's import analysis
- * resolves modules at transform time and rejects non-existent files even when
- * inside try/catch. These are specification-style tests that document the
- * expected exports. Once the file is created by the developer (sub-02),
- * these tests should be updated to import and verify the actual exports.
- */
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-describe("Tabs component exports specification (sub-02)", () => {
-  const requiredExports = ["Tabs", "TabsList", "TabsTrigger", "TabsContent"];
+import * as TabsModule from "@/components/ui/tabs";
 
-  it("must export Tabs root component", () => {
-    expect(requiredExports).toContain("Tabs");
-  });
+describe("Tabs component exports", () => {
+  const requiredExports = ["Tabs", "TabsList", "TabsTrigger", "TabsContent"] as const;
 
-  it("must export TabsList for the tab trigger container", () => {
-    expect(requiredExports).toContain("TabsList");
-  });
+  for (const name of requiredExports) {
+    it(`exports ${name} as a function`, () => {
+      expect(typeof TabsModule[name]).toBe("function");
+    });
+  }
 
-  it("must export TabsTrigger for individual tab buttons (FR-15: Manual | Import)", () => {
-    expect(requiredExports).toContain("TabsTrigger");
-  });
-
-  it("must export TabsContent for tab panel content", () => {
-    expect(requiredExports).toContain("TabsContent");
-  });
-
-  it("must contain exactly 4 required sub-component exports", () => {
-    expect(requiredExports).toHaveLength(4);
+  it("exports tabsListVariants", () => {
+    expect(typeof TabsModule.tabsListVariants).toBe("function");
   });
 });
 
-describe("Tabs implementation requirements (sub-02)", () => {
-  it("must import from radix-ui (matching project pattern)", () => {
-    // import { Tabs as TabsPrimitive } from "radix-ui"
-    const expectedImportSource = "radix-ui";
-    expect(expectedImportSource).toBe("radix-ui");
+describe("Tabs component rendering", () => {
+  it("renders a basic tabs setup with trigger and content", () => {
+    render(
+      <TabsModule.Tabs defaultValue="a">
+        <TabsModule.TabsList>
+          <TabsModule.TabsTrigger value="a">Tab A</TabsModule.TabsTrigger>
+        </TabsModule.TabsList>
+        <TabsModule.TabsContent value="a">Content A</TabsModule.TabsContent>
+      </TabsModule.Tabs>,
+    );
+    expect(screen.getByText("Tab A")).toBeInTheDocument();
+    expect(screen.getByText("Content A")).toBeInTheDocument();
   });
 
-  it("must use cn from ~/lib/utils for className merging", () => {
-    expect(true).toBe(true);
-  });
-
-  it("file location must be apps/web/src/components/ui/tabs.tsx", () => {
-    const expectedPath = "apps/web/src/components/ui/tabs.tsx";
-    expect(expectedPath).toContain("components/ui/tabs.tsx");
-  });
-
-  it("no new npm dependencies required (radix-ui already installed)", () => {
-    expect(true).toBe(true);
+  it("uses data-slot attributes on components", () => {
+    render(
+      <TabsModule.Tabs defaultValue="a" data-testid="tabs">
+        <TabsModule.TabsList data-testid="tabs-list">
+          <TabsModule.TabsTrigger value="a" data-testid="tabs-trigger">
+            Tab A
+          </TabsModule.TabsTrigger>
+        </TabsModule.TabsList>
+        <TabsModule.TabsContent value="a" data-testid="tabs-content">
+          Content A
+        </TabsModule.TabsContent>
+      </TabsModule.Tabs>,
+    );
+    expect(screen.getByTestId("tabs")).toHaveAttribute("data-slot", "tabs");
+    expect(screen.getByTestId("tabs-list")).toHaveAttribute("data-slot", "tabs-list");
+    expect(screen.getByTestId("tabs-trigger")).toHaveAttribute("data-slot", "tabs-trigger");
+    expect(screen.getByTestId("tabs-content")).toHaveAttribute("data-slot", "tabs-content");
   });
 });

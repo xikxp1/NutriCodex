@@ -1,60 +1,46 @@
-/**
- * Tests for AddProductDialog component (sub-04)
- *
- * Requirements covered:
- * - FR-15: "Add Product" button opens dialog with Manual and Import tabs
- * - Architecture: AddProductDialog uses ShadCN Dialog and Tabs components
- * - Architecture: Interface { open: boolean; onOpenChange: (open: boolean) => void }
- *
- * NOTE: The add-product-dialog.tsx file does not exist yet. Vite's import
- * analysis resolves modules at transform time and rejects non-existent files
- * even when inside try/catch. These are specification-style tests that document
- * the expected component behavior. Once the file is created by the developer
- * (sub-04), these tests should be updated to import and verify the actual component.
- */
-import { describe, expect, it } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-describe("AddProductDialog component specification (sub-04)", () => {
-  it("must export AddProductDialog as a function component", () => {
-    // export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps)
-    expect(true).toBe(true);
+vi.mock("~/components/products/manual-product-form", () => ({
+  ManualProductForm: () => <div data-testid="manual-form">Manual Form</div>,
+}));
+
+vi.mock("~/components/products/openfoodfacts-search", () => ({
+  OpenFoodFactsSearch: () => <div data-testid="off-search">OFF Search</div>,
+}));
+
+import { AddProductDialog } from "~/components/products/add-product-dialog";
+
+describe("AddProductDialog component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it("accepts open and onOpenChange props (Architecture)", () => {
-    // Interface: { open: boolean; onOpenChange: (open: boolean) => void }
-    expect(true).toBe(true);
+  it("renders 'Add Product' title when open", () => {
+    render(<AddProductDialog open={true} onOpenChange={vi.fn()} />);
+
+    expect(screen.getByText("Add Product")).toBeInTheDocument();
   });
 
-  it("uses ShadCN Dialog component for the modal overlay (FR-15)", () => {
-    // Imports Dialog, DialogContent, DialogHeader, DialogTitle from ~/components/ui/dialog
-    expect(true).toBe(true);
+  it("shows Manual and Import tab triggers", () => {
+    render(<AddProductDialog open={true} onOpenChange={vi.fn()} />);
+
+    expect(screen.getByRole("tab", { name: /manual/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /import/i })).toBeInTheDocument();
   });
 
-  it("uses ShadCN Tabs component with Manual and Import tabs (FR-15)", () => {
-    // <Tabs defaultValue="manual">
-    //   <TabsList>
-    //     <TabsTrigger value="manual">Manual</TabsTrigger>
-    //     <TabsTrigger value="import">Import from OpenFoodFacts</TabsTrigger>
-    //   </TabsList>
-    //   <TabsContent value="manual"><ManualProductForm /></TabsContent>
-    //   <TabsContent value="import">...</TabsContent>
-    // </Tabs>
-    expect(true).toBe(true);
+  it("renders ManualProductForm in the Manual tab content", () => {
+    render(<AddProductDialog open={true} onOpenChange={vi.fn()} />);
+
+    expect(screen.getByTestId("manual-form")).toBeInTheDocument();
   });
 
-  it("Manual tab renders ManualProductForm component (FR-16)", () => {
-    // The Manual tab content renders ManualProductForm with an onSuccess callback
-    expect(true).toBe(true);
-  });
+  it("calls onOpenChange when dialog is requested to close", () => {
+    const onOpenChange = vi.fn();
+    render(<AddProductDialog open={true} onOpenChange={onOpenChange} />);
 
-  it("Import tab renders OpenFoodFactsSearch component after sub-05 (FR-17)", () => {
-    // Initially (sub-04) the Import tab shows a placeholder.
-    // After sub-05, it renders the OpenFoodFactsSearch component.
-    expect(true).toBe(true);
-  });
+    screen.getByRole("button", { name: /close/i }).click();
 
-  it("file location must be apps/web/src/components/products/add-product-dialog.tsx", () => {
-    const expectedPath = "apps/web/src/components/products/add-product-dialog.tsx";
-    expect(expectedPath).toContain("components/products/add-product-dialog.tsx");
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });

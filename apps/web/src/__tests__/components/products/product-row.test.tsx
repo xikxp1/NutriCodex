@@ -1,73 +1,67 @@
-/**
- * Tests for ProductRow component (sub-03)
- *
- * Requirements covered:
- * - FR-13: Each row shows product image thumbnail, name, and macro summary
- * - FR-3: Nutrition values displayed as integers
- * - FR-19: Clicking a product opens detail view
- * - NFR-7: Image thumbnails at consistent size with object-cover
- *
- * NOTE: The product-row.tsx file does not exist yet. Vite's import analysis
- * resolves modules at transform time and rejects non-existent files even when
- * inside try/catch. These are specification-style tests that document the
- * expected component behavior. Once the file is created by the developer
- * (sub-03), these tests should be updated to import and verify the actual component.
- */
-import { describe, expect, it } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-describe("ProductRow component specification (sub-03)", () => {
-  it("must export ProductRow as a function component", () => {
-    // export function ProductRow({ product, onClick }: ProductRowProps)
-    expect(true).toBe(true);
+vi.mock("lucide-react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("lucide-react")>();
+  return { ...actual, Package: (props: any) => <svg data-testid="package-icon" {...props} /> };
+});
+
+import { ProductRow, type ProductWithImageUrl } from "~/components/products/product-row";
+
+const mockProduct: ProductWithImageUrl = {
+  _id: "product-1",
+  name: "Test Banana",
+  macronutrients: { calories: 89, protein: 1, carbs: 23, fat: 0 },
+  imageUrl: "https://example.com/banana.jpg",
+  source: "manual",
+};
+
+const mockProductNoImage: ProductWithImageUrl = {
+  _id: "product-2",
+  name: "Mystery Food",
+  macronutrients: { calories: 200, protein: 10, carbs: 30, fat: 5 },
+  imageUrl: null,
+  source: "openfoodfacts",
+  barcode: "1234567890",
+};
+
+describe("ProductRow component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it("accepts product and onClick props (Architecture)", () => {
-    // Interface: { product: ProductWithImageUrl; onClick: () => void }
-    // ProductWithImageUrl includes resolved imageUrl (string | null)
-    expect(true).toBe(true);
+  it("renders product name and macronutrient summary", () => {
+    render(<ProductRow product={mockProduct} onClick={vi.fn()} />);
+
+    expect(screen.getByText("Test Banana")).toBeInTheDocument();
+    expect(screen.getByText(/89 kcal/)).toBeInTheDocument();
+    expect(screen.getByText(/1g protein/)).toBeInTheDocument();
+    expect(screen.getByText(/23g carbs/)).toBeInTheDocument();
+    expect(screen.getByText(/0g fat/)).toBeInTheDocument();
   });
 
-  it("renders product name text (FR-13)", () => {
-    // The product name is displayed as text content within the row
-    expect(true).toBe(true);
+  it("renders fallback icon when product has no imageUrl", () => {
+    render(<ProductRow product={mockProductNoImage} onClick={vi.fn()} />);
+
+    expect(screen.getByTestId("package-icon")).toBeInTheDocument();
   });
 
-  it("renders macro summary showing calories, protein, carbs, fat as integers (FR-13, FR-3)", () => {
-    // Macronutrient values displayed as integers (no decimal places)
-    // Format like: "89 kcal | 1g P | 23g C | 0g F" or similar
-    expect(true).toBe(true);
+  it("calls onClick handler when row is clicked", async () => {
+    const user = userEvent.setup();
+    const handleClick = vi.fn();
+
+    render(<ProductRow product={mockProduct} onClick={handleClick} />);
+
+    await user.click(screen.getByRole("button"));
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it("renders image thumbnail when product has imageUrl (FR-13, NFR-7)", () => {
-    // When product.imageUrl is not null, render an <img> element
-    // using Avatar component with consistent size (40-48px)
-    expect(true).toBe(true);
-  });
+  it("renders as a button element", () => {
+    render(<ProductRow product={mockProduct} onClick={vi.fn()} />);
 
-  it("renders placeholder icon when product has no imageUrl (FR-13, NFR-7)", () => {
-    // When product.imageUrl is null, render a fallback icon (e.g., Lucide Package)
-    // or Avatar fallback with consistent size
-    expect(true).toBe(true);
-  });
-
-  it("image thumbnail uses object-cover for consistent aspect ratio (NFR-7)", () => {
-    // img element has object-cover CSS class to prevent layout shifts
-    expect(true).toBe(true);
-  });
-
-  it("row is clickable and calls onClick handler (FR-19)", () => {
-    // The row element has onClick handler or role="button"
-    // Clicking the row triggers the onClick callback
-    expect(true).toBe(true);
-  });
-
-  it("row has fixed height for consistent virtualization (NFR-1)", () => {
-    // The row height is fixed/consistent for useVirtualizer's estimateSize
-    expect(true).toBe(true);
-  });
-
-  it("file location must be apps/web/src/components/products/product-row.tsx", () => {
-    const expectedPath = "apps/web/src/components/products/product-row.tsx";
-    expect(expectedPath).toContain("components/products/product-row.tsx");
+    const button = screen.getByRole("button");
+    expect(button.tagName).toBe("BUTTON");
   });
 });
